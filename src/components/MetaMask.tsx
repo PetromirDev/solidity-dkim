@@ -16,10 +16,10 @@ const Text = ({ isInstalled, account, network }: typeof ethStore) => {
 	}
 
 	return (
-		<div style={{ display: 'flex', flexDirection: 'row' }}>
-			{account ? <div style={{ paddingRight: '1vh' }}>{`[${account}]`}</div> : null}
+		<div style={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}>
+			{account ? <p>{`[${account}]`}</p> : <p>You haven't connected your MetaMask account.</p>}
 
-			<div>{network}</div>
+			<p>{network}</p>
 		</div>
 	)
 }
