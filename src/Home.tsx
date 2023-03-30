@@ -146,11 +146,12 @@ const Container = styled.div`
 	padding: 2.5rem;
 	width: 100%;
 	min-height: 100vh;
-	background: hsla(331, 78%, 69%, 1);
-	background: linear-gradient(90deg, hsla(331, 78%, 69%, 1) 0%, hsla(238, 82%, 70%, 1) 100%);
-	background: -moz-linear-gradient(90deg, hsla(331, 78%, 69%, 1) 0%, hsla(238, 82%, 70%, 1) 100%);
-	background: -webkit-linear-gradient(90deg, hsla(331, 78%, 69%, 1) 0%, hsla(238, 82%, 70%, 1) 100%);
-	filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#ED71AD", endColorstr="#7277F1", GradientType=1 );
+
+	background: hsla(10, 89%, 70%, 1);
+	background: linear-gradient(45deg, hsla(10, 89%, 70%, 1) 0%, hsla(350, 100%, 69%, 1) 100%);
+	background: -moz-linear-gradient(45deg, hsla(10, 89%, 70%, 1) 0%, hsla(350, 100%, 69%, 1) 100%);
+	background: -webkit-linear-gradient(45deg, hsla(10, 89%, 70%, 1) 0%, hsla(350, 100%, 69%, 1) 100%);
+	filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#F78770", endColorstr="#FF607B", GradientType=1 );
 `
 
 const Body = styled.div`
@@ -172,9 +173,9 @@ const DragNDrop = styled.div`
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-  margin-bottom: 4rem;
-  min-height: 300px;
-  cursor: pointer;
+	margin-bottom: 2rem;
+	min-height: 300px;
+	cursor: pointer;
 
 	// Glass effect
 	background: rgba(255, 255, 255, 0.53);
@@ -186,37 +187,37 @@ const DragNDrop = styled.div`
 `
 
 const FileStatus = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 2rem;
-  
-  svg {
-    color: #303030;
-    width: 3.125rem;
-    height: 3.125rem;
-  }
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 2rem;
 
-  p {
-    color: #303030;
-  }
+	svg {
+		color: #303030;
+		width: 3.125rem;
+		height: 3.125rem;
+	}
+
+	p {
+		color: #303030;
+	}
 `
 
 const Title = styled.h1`
-  text-align: center;
-  font-size: 2rem;
-  color: #fff;
-  margin-bottom: 2.2rem;
+	text-align: center;
+	font-size: 2rem;
+	color: #fff;
+	margin-bottom: 2.2rem;
 `
 
 const VerifyButton = styled.button`
-  width: 100%;
-  padding: 1.25rem;
-  border-radius: 12px;
-  border: none;
-  background-color: #fff;
-  color: #303030;
-  font-size: 1rem;
-  font-weight: 600;
+	width: 100%;
+	padding: 1.25rem;
+	border-radius: 12px;
+	border: none;
+	background-color: #fff;
+	color: #303030;
+	font-size: 1rem;
+	font-weight: 600;
 `

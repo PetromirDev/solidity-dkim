@@ -9,8 +9,8 @@ const Text = ({ isInstalled, account, network }: typeof ethStore) => {
 				href="https://metamask.io/"
 				target="_blank"
 				rel="noopener noreferrer"
-				style={{ color: '#387fc7', textDecoration: 'none' }}>
-				INSTALL METAMASK
+				style={{ color: '#ff5b3a', fontWeight: 500, textDecoration: 'none' }}>
+				Install MetaMask
 			</a>
 		)
 	}
@@ -27,7 +27,7 @@ const Text = ({ isInstalled, account, network }: typeof ethStore) => {
 const Metamask = observer(() => {
 	return (
 		<Wrapper>
-			<Image src="/static/images/metamask.png" alt="Metamask Logo" className="img" />
+			{ethStore.isInstalled && <Image src="/static/images/metamask.png" alt="Metamask Logo" className="img" />}
 			<Text
         {...ethStore}
 			/>
@@ -42,8 +42,8 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  padding: .5rem;
-  margin-bottom: 1.2rem;
+	height: 3.75rem;
+	margin-bottom: 1rem;
   border-radius: 12px;
   color: #303030;
 
