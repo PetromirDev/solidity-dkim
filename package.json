@@ -30,6 +30,7 @@
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-dropzone": "^10.1.10",
+    "styled-components": "^5.3.9",
     "styled-jsx": "^3.2.1"
   },
   "devDependencies": {
