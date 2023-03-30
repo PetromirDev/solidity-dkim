@@ -4,8 +4,7 @@ const definitions = {
 
 const getContract = async (eth: any, name: keyof typeof definitions) => {
   if (!definitions[name]) {
-    const data = await import(`../../../contracts/${name}.json`);
-
+    const data = await import(`../../contracts/${name}.json`);
     definitions[name] = data;
   }
 
