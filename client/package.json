@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "description": "A demo application showcasing solidity-dkim",
   "scripts": {
+    "preinstall": "cd ../ && yarn install",
     "dev": "node server.js",
     "build": "next build",
     "export": "next export",
     "start": "NODE_ENV=production node server.js",
-    "now": "npm run build && now --prod"
+    "now": "npm run build && npx now --prod"
   },
   "author": "",
   "license": "ISC",

@@ -126,107 +126,10 @@ module.exports =
 /************************************************************************/
 /******/ ({
 
-/***/ "../parse-email/browser.js":
-/*!*********************************!*\
-  !*** ../parse-email/browser.js ***!
-  \*********************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-  parse and return email data
-  (browser)
-*/
-const Hashes = __webpack_require__(/*! jshashes */ "../parse-email/node_modules/jshashes/hashes.js");
-const parse = __webpack_require__(/*! ./parse */ "../parse-email/parse.js");
-const toSolidity = __webpack_require__(/*! ./utils/toSolidity */ "../parse-email/utils/toSolidity.js");
-const publicKeyToComponents = __webpack_require__(/*! ./utils/publicKeyToComponents */ "../parse-email/utils/publicKeyToComponents.js");
-
-const main = email => {
-  return new Promise(async (resolve, reject) => {
-    // get dkims
-    const dkims = parse(email).dkims.map(dkim => {
-      const algorithm = dkim.algorithm
-        .split("-")
-        .pop()
-        .toUpperCase();
-
-      const bodyHashMatched =
-        new Hashes[algorithm]().hex(dkim.processedBody) ===
-        dkim.signature.hash.toString("hex");
-
-      if (!bodyHashMatched) {
-        return reject("body hash did not verify");
-      }
-
-      const hash = new Hashes[algorithm]().hex(dkim.processedHeader);
-
-      return {
-        ...dkim,
-        hash
-      };
-    });
-
-    // get dns records
-    const publicKeys = await fetch("/api/getPublicKeys", {
-      method: "POST",
-      mode: "same-origin",
-      cache: "no-cache",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      referrer: "no-referrer",
-      body: JSON.stringify(
-        dkims.map(dkim => ({
-          domain: dkim.signature.domain,
-          selector: dkim.signature.selector
-        }))
-      )
-    })
-      .then(res => res.json())
-      .then(entries => {
-        return entries.map(entry => {
-          const { publicKey } = entry;
-          const { exponent, modulus } = publicKeyToComponents(publicKey);
-
-          return {
-            ...entry,
-            exponent,
-            modulus
-          };
-        });
-      })
-      .catch(reject);
-
-    return resolve(
-      dkims.map((dkim, i) => {
-        const solidity = toSolidity({
-          algorithm: dkim.algorithm,
-          hash: dkim.hash,
-          signature: dkim.signature.signature,
-          exponent: publicKeys[i].exponent,
-          modulus: publicKeys[i].modulus
-        });
-
-        return {
-          ...dkim,
-          ...publicKeys[i],
-          solidity
-        };
-      })
-    );
-  });
-};
-
-module.exports = main;
-
-
-/***/ }),
-
-/***/ "../parse-email/node_modules/asn1/lib/ber/errors.js":
-/*!**********************************************************!*\
-  !*** ../parse-email/node_modules/asn1/lib/ber/errors.js ***!
-  \**********************************************************/
+/***/ "../node_modules/asn1/lib/ber/errors.js":
+/*!**********************************************!*\
+  !*** ../node_modules/asn1/lib/ber/errors.js ***!
+  \**********************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -247,20 +150,20 @@ module.exports = {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/asn1/lib/ber/index.js":
-/*!*********************************************************!*\
-  !*** ../parse-email/node_modules/asn1/lib/ber/index.js ***!
-  \*********************************************************/
+/***/ "../node_modules/asn1/lib/ber/index.js":
+/*!*********************************************!*\
+  !*** ../node_modules/asn1/lib/ber/index.js ***!
+  \*********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
-var errors = __webpack_require__(/*! ./errors */ "../parse-email/node_modules/asn1/lib/ber/errors.js");
-var types = __webpack_require__(/*! ./types */ "../parse-email/node_modules/asn1/lib/ber/types.js");
+var errors = __webpack_require__(/*! ./errors */ "../node_modules/asn1/lib/ber/errors.js");
+var types = __webpack_require__(/*! ./types */ "../node_modules/asn1/lib/ber/types.js");
 
-var Reader = __webpack_require__(/*! ./reader */ "../parse-email/node_modules/asn1/lib/ber/reader.js");
-var Writer = __webpack_require__(/*! ./writer */ "../parse-email/node_modules/asn1/lib/ber/writer.js");
+var Reader = __webpack_require__(/*! ./reader */ "../node_modules/asn1/lib/ber/reader.js");
+var Writer = __webpack_require__(/*! ./writer */ "../node_modules/asn1/lib/ber/writer.js");
 
 
 // --- Exports
@@ -285,20 +188,20 @@ for (var e in errors) {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/asn1/lib/ber/reader.js":
-/*!**********************************************************!*\
-  !*** ../parse-email/node_modules/asn1/lib/ber/reader.js ***!
-  \**********************************************************/
+/***/ "../node_modules/asn1/lib/ber/reader.js":
+/*!**********************************************!*\
+  !*** ../node_modules/asn1/lib/ber/reader.js ***!
+  \**********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
 var assert = __webpack_require__(/*! assert */ "assert");
-var Buffer = __webpack_require__(/*! safer-buffer */ "../parse-email/node_modules/safer-buffer/safer.js").Buffer;
+var Buffer = __webpack_require__(/*! safer-buffer */ "../node_modules/safer-buffer/safer.js").Buffer;
 
-var ASN1 = __webpack_require__(/*! ./types */ "../parse-email/node_modules/asn1/lib/ber/types.js");
-var errors = __webpack_require__(/*! ./errors */ "../parse-email/node_modules/asn1/lib/ber/errors.js");
+var ASN1 = __webpack_require__(/*! ./types */ "../node_modules/asn1/lib/ber/types.js");
+var errors = __webpack_require__(/*! ./errors */ "../node_modules/asn1/lib/ber/errors.js");
 
 
 // --- Globals
@@ -558,10 +461,10 @@ module.exports = Reader;
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/asn1/lib/ber/types.js":
-/*!*********************************************************!*\
-  !*** ../parse-email/node_modules/asn1/lib/ber/types.js ***!
-  \*********************************************************/
+/***/ "../node_modules/asn1/lib/ber/types.js":
+/*!*********************************************!*\
+  !*** ../node_modules/asn1/lib/ber/types.js ***!
+  \*********************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -605,19 +508,19 @@ module.exports = {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/asn1/lib/ber/writer.js":
-/*!**********************************************************!*\
-  !*** ../parse-email/node_modules/asn1/lib/ber/writer.js ***!
-  \**********************************************************/
+/***/ "../node_modules/asn1/lib/ber/writer.js":
+/*!**********************************************!*\
+  !*** ../node_modules/asn1/lib/ber/writer.js ***!
+  \**********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
 var assert = __webpack_require__(/*! assert */ "assert");
-var Buffer = __webpack_require__(/*! safer-buffer */ "../parse-email/node_modules/safer-buffer/safer.js").Buffer;
-var ASN1 = __webpack_require__(/*! ./types */ "../parse-email/node_modules/asn1/lib/ber/types.js");
-var errors = __webpack_require__(/*! ./errors */ "../parse-email/node_modules/asn1/lib/ber/errors.js");
+var Buffer = __webpack_require__(/*! safer-buffer */ "../node_modules/safer-buffer/safer.js").Buffer;
+var ASN1 = __webpack_require__(/*! ./types */ "../node_modules/asn1/lib/ber/types.js");
+var errors = __webpack_require__(/*! ./errors */ "../node_modules/asn1/lib/ber/errors.js");
 
 
 // --- Globals
@@ -933,10 +836,10 @@ module.exports = Writer;
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/asn1/lib/index.js":
-/*!*****************************************************!*\
-  !*** ../parse-email/node_modules/asn1/lib/index.js ***!
-  \*****************************************************/
+/***/ "../node_modules/asn1/lib/index.js":
+/*!*****************************************!*\
+  !*** ../node_modules/asn1/lib/index.js ***!
+  \*****************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -945,7 +848,7 @@ module.exports = Writer;
 // If you have no idea what ASN.1 or BER is, see this:
 // ftp://ftp.rsa.com/pub/pkcs/ascii/layman.asc
 
-var Ber = __webpack_require__(/*! ./ber/index */ "../parse-email/node_modules/asn1/lib/ber/index.js");
+var Ber = __webpack_require__(/*! ./ber/index */ "../node_modules/asn1/lib/ber/index.js");
 
 
 
@@ -964,10 +867,10 @@ module.exports = {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/dkim-signature/lib/signature.js":
-/*!*******************************************************************!*\
-  !*** ../parse-email/node_modules/dkim-signature/lib/signature.js ***!
-  \*******************************************************************/
+/***/ "../node_modules/dkim-signature/lib/signature.js":
+/*!*******************************************************!*\
+  !*** ../node_modules/dkim-signature/lib/signature.js ***!
+  \*******************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -1163,10 +1066,10 @@ module.exports = Signature
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/dkim/lib/process-body.js":
-/*!************************************************************!*\
-  !*** ../parse-email/node_modules/dkim/lib/process-body.js ***!
-  \************************************************************/
+/***/ "../node_modules/dkim/lib/process-body.js":
+/*!************************************************!*\
+  !*** ../node_modules/dkim/lib/process-body.js ***!
+  \************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -1189,13 +1092,13 @@ function processBody( message, method ) {
 
   // @see https://tools.ietf.org/html/rfc6376#section-3.4.3
   if( method === 'simple' ) {
-    return message.toString( 'ascii' )
+    return message.toString( 'binary' )
       .replace( /(\r\n)+$/m, '' ) + '\r\n'
   }
 
   // @see https://tools.ietf.org/html/rfc6376#section-3.4.4
   if( method === 'relaxed' ) {
-    return message.toString( 'ascii' )
+    return message.toString( 'binary' )
       // Ignore all whitespace at the end of lines.
       .replace( /[\x20\x09]+(?=\r\n)/g, '' )
       // Reduce all sequences of WSP within a line to a single SP
@@ -1211,10 +1114,10 @@ module.exports = processBody
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/dkim/lib/process-header.js":
-/*!**************************************************************!*\
-  !*** ../parse-email/node_modules/dkim/lib/process-header.js ***!
-  \**************************************************************/
+/***/ "../node_modules/dkim/lib/process-header.js":
+/*!**************************************************!*\
+  !*** ../node_modules/dkim/lib/process-header.js ***!
+  \**************************************************/
 /*! no static exports found */
 /***/ (function(module, exports) {
 
@@ -1327,10 +1230,10 @@ module.exports = processHeader
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/jshashes/hashes.js":
-/*!******************************************************!*\
-  !*** ../parse-email/node_modules/jshashes/hashes.js ***!
-  \******************************************************/
+/***/ "../node_modules/jshashes/hashes.js":
+/*!******************************************!*\
+  !*** ../node_modules/jshashes/hashes.js ***!
+  \******************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3092,10 +2995,10 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/node-rsa/src/NodeRSA.js":
-/*!***********************************************************!*\
-  !*** ../parse-email/node_modules/node-rsa/src/NodeRSA.js ***!
-  \***********************************************************/
+/***/ "../node_modules/node-rsa/src/NodeRSA.js":
+/*!***********************************************!*\
+  !*** ../node_modules/node-rsa/src/NodeRSA.js ***!
+  \***********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3107,13 +3010,13 @@ var __WEBPACK_AMD_DEFINE_RESULT__;/**
  */
 
 var constants = __webpack_require__(/*! constants */ "constants");
-var rsa = __webpack_require__(/*! ./libs/rsa.js */ "../parse-email/node_modules/node-rsa/src/libs/rsa.js");
+var rsa = __webpack_require__(/*! ./libs/rsa.js */ "../node_modules/node-rsa/src/libs/rsa.js");
 var crypt = __webpack_require__(/*! crypto */ "crypto");
-var ber = __webpack_require__(/*! asn1 */ "../parse-email/node_modules/asn1/lib/index.js").Ber;
-var _ = __webpack_require__(/*! ./utils */ "../parse-email/node_modules/node-rsa/src/utils.js")._;
-var utils = __webpack_require__(/*! ./utils */ "../parse-email/node_modules/node-rsa/src/utils.js");
-var schemes = __webpack_require__(/*! ./schemes/schemes.js */ "../parse-email/node_modules/node-rsa/src/schemes/schemes.js");
-var formats = __webpack_require__(/*! ./formats/formats.js */ "../parse-email/node_modules/node-rsa/src/formats/formats.js");
+var ber = __webpack_require__(/*! asn1 */ "../node_modules/asn1/lib/index.js").Ber;
+var _ = __webpack_require__(/*! ./utils */ "../node_modules/node-rsa/src/utils.js")._;
+var utils = __webpack_require__(/*! ./utils */ "../node_modules/node-rsa/src/utils.js");
+var schemes = __webpack_require__(/*! ./schemes/schemes.js */ "../node_modules/node-rsa/src/schemes/schemes.js");
+var formats = __webpack_require__(/*! ./formats/formats.js */ "../node_modules/node-rsa/src/formats/formats.js");
 
 if (typeof constants.RSA_NO_PADDING === "undefined") {
     //patch for node v0.10.x, constants do not defined
@@ -3501,10 +3404,10 @@ module.exports = (function () {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/node-rsa/src/encryptEngines/encryptEngines.js":
-/*!*********************************************************************************!*\
-  !*** ../parse-email/node_modules/node-rsa/src/encryptEngines/encryptEngines.js ***!
-  \*********************************************************************************/
+/***/ "../node_modules/node-rsa/src/encryptEngines/encryptEngines.js":
+/*!*********************************************************************!*\
+  !*** ../node_modules/node-rsa/src/encryptEngines/encryptEngines.js ***!
+  \*********************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3512,13 +3415,13 @@ var crypt = __webpack_require__(/*! crypto */ "crypto");
 
 module.exports = {
     getEngine: function (keyPair, options) {
-        var engine = __webpack_require__(/*! ./js.js */ "../parse-email/node_modules/node-rsa/src/encryptEngines/js.js");
+        var engine = __webpack_require__(/*! ./js.js */ "../node_modules/node-rsa/src/encryptEngines/js.js");
         if (options.environment === 'node') {
             if (typeof crypt.publicEncrypt === 'function' && typeof crypt.privateDecrypt === 'function') {
                 if (typeof crypt.privateEncrypt === 'function' && typeof crypt.publicDecrypt === 'function') {
-                    engine = __webpack_require__(/*! ./io.js */ "../parse-email/node_modules/node-rsa/src/encryptEngines/io.js");
+                    engine = __webpack_require__(/*! ./io.js */ "../node_modules/node-rsa/src/encryptEngines/io.js");
                 } else {
-                    engine = __webpack_require__(/*! ./node12.js */ "../parse-email/node_modules/node-rsa/src/encryptEngines/node12.js");
+                    engine = __webpack_require__(/*! ./node12.js */ "../node_modules/node-rsa/src/encryptEngines/node12.js");
                 }
             }
         }
@@ -3528,16 +3431,16 @@ module.exports = {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/node-rsa/src/encryptEngines/io.js":
-/*!*********************************************************************!*\
-  !*** ../parse-email/node_modules/node-rsa/src/encryptEngines/io.js ***!
-  \*********************************************************************/
+/***/ "../node_modules/node-rsa/src/encryptEngines/io.js":
+/*!*********************************************************!*\
+  !*** ../node_modules/node-rsa/src/encryptEngines/io.js ***!
+  \*********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 var crypto = __webpack_require__(/*! crypto */ "crypto");
 var constants = __webpack_require__(/*! constants */ "constants");
-var schemes = __webpack_require__(/*! ../schemes/schemes.js */ "../parse-email/node_modules/node-rsa/src/schemes/schemes.js");
+var schemes = __webpack_require__(/*! ../schemes/schemes.js */ "../node_modules/node-rsa/src/schemes/schemes.js");
 
 module.exports = function (keyPair, options) {
     var pkcs1Scheme = schemes.pkcs1.makeScheme(keyPair, options);
@@ -3610,15 +3513,15 @@ module.exports = function (keyPair, options) {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/node-rsa/src/encryptEngines/js.js":
-/*!*********************************************************************!*\
-  !*** ../parse-email/node_modules/node-rsa/src/encryptEngines/js.js ***!
-  \*********************************************************************/
+/***/ "../node_modules/node-rsa/src/encryptEngines/js.js":
+/*!*********************************************************!*\
+  !*** ../node_modules/node-rsa/src/encryptEngines/js.js ***!
+  \*********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var BigInteger = __webpack_require__(/*! ../libs/jsbn.js */ "../parse-email/node_modules/node-rsa/src/libs/jsbn.js");
-var schemes = __webpack_require__(/*! ../schemes/schemes.js */ "../parse-email/node_modules/node-rsa/src/schemes/schemes.js");
+var BigInteger = __webpack_require__(/*! ../libs/jsbn.js */ "../node_modules/node-rsa/src/libs/jsbn.js");
+var schemes = __webpack_require__(/*! ../schemes/schemes.js */ "../node_modules/node-rsa/src/schemes/schemes.js");
 
 module.exports = function (keyPair, options) {
     var pkcs1Scheme = schemes.pkcs1.makeScheme(keyPair, options);
@@ -3654,19 +3557,19 @@ module.exports = function (keyPair, options) {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/node-rsa/src/encryptEngines/node12.js":
-/*!*************************************************************************!*\
-  !*** ../parse-email/node_modules/node-rsa/src/encryptEngines/node12.js ***!
-  \*************************************************************************/
+/***/ "../node_modules/node-rsa/src/encryptEngines/node12.js":
+/*!*************************************************************!*\
+  !*** ../node_modules/node-rsa/src/encryptEngines/node12.js ***!
+  \*************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 var crypto = __webpack_require__(/*! crypto */ "crypto");
 var constants = __webpack_require__(/*! constants */ "constants");
-var schemes = __webpack_require__(/*! ../schemes/schemes.js */ "../parse-email/node_modules/node-rsa/src/schemes/schemes.js");
+var schemes = __webpack_require__(/*! ../schemes/schemes.js */ "../node_modules/node-rsa/src/schemes/schemes.js");
 
 module.exports = function (keyPair, options) {
-    var jsEngine = __webpack_require__(/*! ./js.js */ "../parse-email/node_modules/node-rsa/src/encryptEngines/js.js")(keyPair, options);
+    var jsEngine = __webpack_require__(/*! ./js.js */ "../node_modules/node-rsa/src/encryptEngines/js.js")(keyPair, options);
     var pkcs1Scheme = schemes.pkcs1.makeScheme(keyPair, options);
 
     return {
@@ -3720,15 +3623,15 @@ module.exports = function (keyPair, options) {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/node-rsa/src/formats/components.js":
-/*!**********************************************************************!*\
-  !*** ../parse-email/node_modules/node-rsa/src/formats/components.js ***!
-  \**********************************************************************/
+/***/ "../node_modules/node-rsa/src/formats/components.js":
+/*!**********************************************************!*\
+  !*** ../node_modules/node-rsa/src/formats/components.js ***!
+  \**********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _ = __webpack_require__(/*! ../utils */ "../parse-email/node_modules/node-rsa/src/utils.js")._;
-var utils = __webpack_require__(/*! ../utils */ "../parse-email/node_modules/node-rsa/src/utils.js");
+var _ = __webpack_require__(/*! ../utils */ "../node_modules/node-rsa/src/utils.js")._;
+var utils = __webpack_require__(/*! ../utils */ "../node_modules/node-rsa/src/utils.js");
 
 module.exports = {
     privateExport: function (key, options) {
@@ -3802,14 +3705,14 @@ module.exports = {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/node-rsa/src/formats/formats.js":
-/*!*******************************************************************!*\
-  !*** ../parse-email/node_modules/node-rsa/src/formats/formats.js ***!
-  \*******************************************************************/
+/***/ "../node_modules/node-rsa/src/formats/formats.js":
+/*!*******************************************************!*\
+  !*** ../node_modules/node-rsa/src/formats/formats.js ***!
+  \*******************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var _ = __webpack_require__(/*! ../utils */ "../parse-email/node_modules/node-rsa/src/utils.js")._;
+var _ = __webpack_require__(/*! ../utils */ "../node_modules/node-rsa/src/utils.js")._;
 
 function formatParse(format) {
     format = format.split('-');
@@ -3839,9 +3742,10 @@ function formatParse(format) {
 }
 
 module.exports = {
-    pkcs1: __webpack_require__(/*! ./pkcs1 */ "../parse-email/node_modules/node-rsa/src/formats/pkcs1.js"),
-    pkcs8: __webpack_require__(/*! ./pkcs8 */ "../parse-email/node_modules/node-rsa/src/formats/pkcs8.js"),
-    components: __webpack_require__(/*! ./components */ "../parse-email/node_modules/node-rsa/src/formats/components.js"),
+    pkcs1: __webpack_require__(/*! ./pkcs1 */ "../node_modules/node-rsa/src/formats/pkcs1.js"),
+    pkcs8: __webpack_require__(/*! ./pkcs8 */ "../node_modules/node-rsa/src/formats/pkcs8.js"),
+    components: __webpack_require__(/*! ./components */ "../node_modules/node-rsa/src/formats/components.js"),
+    openssh: __webpack_require__(/*! ./openssh */ "../node_modules/node-rsa/src/formats/openssh.js"),
 
     isPrivateExport: function (format) {
         return module.exports[format] && typeof module.exports[format].privateExport === 'function';
@@ -3908,16 +3812,318 @@ module.exports = {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/node-rsa/src/formats/pkcs1.js":
-/*!*****************************************************************!*\
-  !*** ../parse-email/node_modules/node-rsa/src/formats/pkcs1.js ***!
-  \*****************************************************************/
+/***/ "../node_modules/node-rsa/src/formats/openssh.js":
+/*!*******************************************************!*\
+  !*** ../node_modules/node-rsa/src/formats/openssh.js ***!
+  \*******************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ber = __webpack_require__(/*! asn1 */ "../parse-email/node_modules/asn1/lib/index.js").Ber;
-var _ = __webpack_require__(/*! ../utils */ "../parse-email/node_modules/node-rsa/src/utils.js")._;
-var utils = __webpack_require__(/*! ../utils */ "../parse-email/node_modules/node-rsa/src/utils.js");
+var _ = __webpack_require__(/*! ../utils */ "../node_modules/node-rsa/src/utils.js")._;
+var utils = __webpack_require__(/*! ../utils */ "../node_modules/node-rsa/src/utils.js");
+var BigInteger = __webpack_require__(/*! ../libs/jsbn */ "../node_modules/node-rsa/src/libs/jsbn.js");
+
+const PRIVATE_OPENING_BOUNDARY = "-----BEGIN OPENSSH PRIVATE KEY-----";
+const PRIVATE_CLOSING_BOUNDARY = "-----END OPENSSH PRIVATE KEY-----";
+
+module.exports = {
+    privateExport: function (key, options) {
+        const nbuf = key.n.toBuffer();
+
+        let ebuf = Buffer.alloc(4)
+        ebuf.writeUInt32BE(key.e, 0);
+        //Slice leading zeroes
+        while (ebuf[0] === 0) ebuf = ebuf.slice(1);
+
+        const dbuf = key.d.toBuffer();
+        const coeffbuf = key.coeff.toBuffer();
+        const pbuf = key.p.toBuffer();
+        const qbuf = key.q.toBuffer();
+        let commentbuf;
+        if (typeof key.sshcomment !== "undefined") {
+            commentbuf = Buffer.from(key.sshcomment);
+        } else {
+            commentbuf = Buffer.from([]);
+        }
+
+        const pubkeyLength =
+            11 + // 32bit length, 'ssh-rsa'
+            4 + ebuf.byteLength +
+            4 + nbuf.byteLength;
+
+        const privateKeyLength =
+            8 + //64bit unused checksum
+            11 + // 32bit length, 'ssh-rsa'
+            4 + nbuf.byteLength +
+            4 + ebuf.byteLength +
+            4 + dbuf.byteLength +
+            4 + coeffbuf.byteLength +
+            4 + pbuf.byteLength +
+            4 + qbuf.byteLength +
+            4 + commentbuf.byteLength;
+
+        let length =
+            15 + //openssh-key-v1,0x00,
+            16 + // 2*(32bit length, 'none')
+            4 + // 32bit length, empty string
+            4 + // 32bit number of keys
+            4 + // 32bit pubkey length
+            pubkeyLength +
+            4 + //32bit private+checksum+comment+padding length
+            privateKeyLength;
+
+        const paddingLength = Math.ceil(privateKeyLength / 8) * 8 - privateKeyLength;
+        length += paddingLength;
+
+        const buf = Buffer.alloc(length);
+        const writer = {buf: buf, off: 0};
+        buf.write("openssh-key-v1", "utf8");
+        buf.writeUInt8(0, 14);
+        writer.off += 15;
+
+        writeOpenSSHKeyString(writer, Buffer.from("none"));
+        writeOpenSSHKeyString(writer, Buffer.from("none"));
+        writeOpenSSHKeyString(writer, Buffer.from(""));
+
+        writer.off = writer.buf.writeUInt32BE(1, writer.off);
+        writer.off = writer.buf.writeUInt32BE(pubkeyLength, writer.off);
+
+        writeOpenSSHKeyString(writer, Buffer.from("ssh-rsa"));
+        writeOpenSSHKeyString(writer, ebuf);
+        writeOpenSSHKeyString(writer, nbuf);
+
+        writer.off = writer.buf.writeUInt32BE(
+            length - 47 - pubkeyLength,
+            writer.off
+        );
+        writer.off += 8;
+
+        writeOpenSSHKeyString(writer, Buffer.from("ssh-rsa"));
+        writeOpenSSHKeyString(writer, nbuf);
+        writeOpenSSHKeyString(writer, ebuf);
+        writeOpenSSHKeyString(writer, dbuf);
+        writeOpenSSHKeyString(writer, coeffbuf);
+        writeOpenSSHKeyString(writer, pbuf);
+        writeOpenSSHKeyString(writer, qbuf);
+        writeOpenSSHKeyString(writer, commentbuf);
+
+        let pad = 0x01;
+        while (writer.off < length) {
+            writer.off = writer.buf.writeUInt8(pad++, writer.off);
+        }
+
+        if (options.type === "der") {
+            return writer.buf
+        } else {
+            return PRIVATE_OPENING_BOUNDARY + "\n" + utils.linebrk(buf.toString("base64"), 70) + "\n" + PRIVATE_CLOSING_BOUNDARY + "\n";
+        }
+    },
+
+    privateImport: function (key, data, options) {
+        options = options || {};
+        var buffer;
+
+        if (options.type !== "der") {
+            if (Buffer.isBuffer(data)) {
+                data = data.toString("utf8");
+            }
+
+            if (_.isString(data)) {
+                var pem = utils.trimSurroundingText(data, PRIVATE_OPENING_BOUNDARY, PRIVATE_CLOSING_BOUNDARY)
+                    .replace(/\s+|\n\r|\n|\r$/gm, "");
+                buffer = Buffer.from(pem, "base64");
+            } else {
+                throw Error("Unsupported key format");
+            }
+        } else if (Buffer.isBuffer(data)) {
+            buffer = data;
+        } else {
+            throw Error("Unsupported key format");
+        }
+
+        const reader = {buf: buffer, off: 0};
+
+        if (buffer.slice(0, 14).toString("ascii") !== "openssh-key-v1")
+            throw "Invalid file format.";
+
+        reader.off += 15;
+
+        //ciphername
+        if (readOpenSSHKeyString(reader).toString("ascii") !== "none")
+            throw Error("Unsupported key type");
+        //kdfname
+        if (readOpenSSHKeyString(reader).toString("ascii") !== "none")
+            throw Error("Unsupported key type");
+        //kdf
+        if (readOpenSSHKeyString(reader).toString("ascii") !== "")
+            throw Error("Unsupported key type");
+        //keynum
+        reader.off += 4;
+
+        //sshpublength
+        reader.off += 4;
+
+        //keytype
+        if (readOpenSSHKeyString(reader).toString("ascii") !== "ssh-rsa")
+            throw Error("Unsupported key type");
+        readOpenSSHKeyString(reader);
+        readOpenSSHKeyString(reader);
+
+        reader.off += 12;
+        if (readOpenSSHKeyString(reader).toString("ascii") !== "ssh-rsa")
+            throw Error("Unsupported key type");
+
+        const n = readOpenSSHKeyString(reader);
+        const e = readOpenSSHKeyString(reader);
+        const d = readOpenSSHKeyString(reader);
+        const coeff = readOpenSSHKeyString(reader);
+        const p = readOpenSSHKeyString(reader);
+        const q = readOpenSSHKeyString(reader);
+
+        //Calculate missing values
+        const dint = new BigInteger(d);
+        const qint = new BigInteger(q);
+        const pint = new BigInteger(p);
+        const dp = dint.mod(pint.subtract(BigInteger.ONE));
+        const dq = dint.mod(qint.subtract(BigInteger.ONE));
+
+        key.setPrivate(
+            n,  // modulus
+            e,  // publicExponent
+            d,  // privateExponent
+            p,  // prime1
+            q,  // prime2
+            dp.toBuffer(),  // exponent1 -- d mod (p1)
+            dq.toBuffer(),  // exponent2 -- d mod (q-1)
+            coeff  // coefficient -- (inverse of q) mod p
+        );
+
+        key.sshcomment = readOpenSSHKeyString(reader).toString("ascii");
+    },
+
+    publicExport: function (key, options) {
+        let ebuf = Buffer.alloc(4)
+        ebuf.writeUInt32BE(key.e, 0);
+        //Slice leading zeroes
+        while (ebuf[0] === 0) ebuf = ebuf.slice(1);
+        const nbuf = key.n.toBuffer();
+        const buf = Buffer.alloc(
+            ebuf.byteLength + 4 +
+            nbuf.byteLength + 4 +
+            "ssh-rsa".length + 4
+        );
+
+        const writer = {buf: buf, off: 0};
+        writeOpenSSHKeyString(writer, Buffer.from("ssh-rsa"));
+        writeOpenSSHKeyString(writer, ebuf);
+        writeOpenSSHKeyString(writer, nbuf);
+
+        let comment = key.sshcomment || "";
+
+        if (options.type === "der") {
+            return writer.buf
+        } else {
+            return "ssh-rsa " + buf.toString("base64") + " " + comment + "\n";
+        }
+    },
+
+    publicImport: function (key, data, options) {
+        options = options || {};
+        var buffer;
+
+        if (options.type !== "der") {
+            if (Buffer.isBuffer(data)) {
+                data = data.toString("utf8");
+            }
+
+            if (_.isString(data)) {
+                if (data.substring(0, 8) !== "ssh-rsa ")
+                    throw Error("Unsupported key format");
+                let pemEnd = data.indexOf(" ", 8);
+
+                //Handle keys with no comment
+                if (pemEnd === -1) {
+                    pemEnd = data.length;
+                } else {
+                    key.sshcomment = data.substring(pemEnd + 1)
+                        .replace(/\s+|\n\r|\n|\r$/gm, "");
+                }
+
+                const pem = data.substring(8, pemEnd)
+                    .replace(/\s+|\n\r|\n|\r$/gm, "");
+                buffer = Buffer.from(pem, "base64");
+            } else {
+                throw Error("Unsupported key format");
+            }
+        } else if (Buffer.isBuffer(data)) {
+            buffer = data;
+        } else {
+            throw Error("Unsupported key format");
+        }
+
+        const reader = {buf: buffer, off: 0};
+
+        const type = readOpenSSHKeyString(reader).toString("ascii");
+
+        if (type !== "ssh-rsa")
+            throw Error("Invalid key type: " + type);
+
+        const e = readOpenSSHKeyString(reader);
+        const n = readOpenSSHKeyString(reader);
+
+        key.setPublic(
+            n,
+            e
+        );
+    },
+
+    /**
+     * Trying autodetect and import key
+     * @param key
+     * @param data
+     */
+    autoImport: function (key, data) {
+        // [\S\s]* matches zero or more of any character
+        if (/^[\S\s]*-----BEGIN OPENSSH PRIVATE KEY-----\s*(?=(([A-Za-z0-9+/=]+\s*)+))\1-----END OPENSSH PRIVATE KEY-----[\S\s]*$/g.test(data)) {
+            module.exports.privateImport(key, data);
+            return true;
+        }
+
+        if (/^[\S\s]*ssh-rsa \s*(?=(([A-Za-z0-9+/=]+\s*)+))\1[\S\s]*$/g.test(data)) {
+            module.exports.publicImport(key, data);
+            return true;
+        }
+
+        return false;
+    }
+};
+
+function readOpenSSHKeyString(reader) {
+    const len = reader.buf.readInt32BE(reader.off);
+    reader.off += 4;
+    const res = reader.buf.slice(reader.off, reader.off + len);
+    reader.off += len;
+    return res;
+}
+
+function writeOpenSSHKeyString(writer, data) {
+    writer.buf.writeInt32BE(data.byteLength, writer.off);
+    writer.off += 4;
+    writer.off += data.copy(writer.buf, writer.off);
+}
+
+/***/ }),
+
+/***/ "../node_modules/node-rsa/src/formats/pkcs1.js":
+/*!*****************************************************!*\
+  !*** ../node_modules/node-rsa/src/formats/pkcs1.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+var ber = __webpack_require__(/*! asn1 */ "../node_modules/asn1/lib/index.js").Ber;
+var _ = __webpack_require__(/*! ../utils */ "../node_modules/node-rsa/src/utils.js")._;
+var utils = __webpack_require__(/*! ../utils */ "../node_modules/node-rsa/src/utils.js");
 
 const PRIVATE_OPENING_BOUNDARY = '-----BEGIN RSA PRIVATE KEY-----';
 const PRIVATE_CLOSING_BOUNDARY = '-----END RSA PRIVATE KEY-----';
@@ -4066,17 +4272,17 @@ module.exports = {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/node-rsa/src/formats/pkcs8.js":
-/*!*****************************************************************!*\
-  !*** ../parse-email/node_modules/node-rsa/src/formats/pkcs8.js ***!
-  \*****************************************************************/
+/***/ "../node_modules/node-rsa/src/formats/pkcs8.js":
+/*!*****************************************************!*\
+  !*** ../node_modules/node-rsa/src/formats/pkcs8.js ***!
+  \*****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-var ber = __webpack_require__(/*! asn1 */ "../parse-email/node_modules/asn1/lib/index.js").Ber;
-var _ = __webpack_require__(/*! ../utils */ "../parse-email/node_modules/node-rsa/src/utils.js")._;
+var ber = __webpack_require__(/*! asn1 */ "../node_modules/asn1/lib/index.js").Ber;
+var _ = __webpack_require__(/*! ../utils */ "../node_modules/node-rsa/src/utils.js")._;
 var PUBLIC_RSA_OID = '1.2.840.113549.1.1.1';
-var utils = __webpack_require__(/*! ../utils */ "../parse-email/node_modules/node-rsa/src/utils.js");
+var utils = __webpack_require__(/*! ../utils */ "../node_modules/node-rsa/src/utils.js");
 
 const PRIVATE_OPENING_BOUNDARY = '-----BEGIN PRIVATE KEY-----';
 const PRIVATE_CLOSING_BOUNDARY = '-----END PRIVATE KEY-----';
@@ -4264,10 +4470,10 @@ module.exports = {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/node-rsa/src/libs/jsbn.js":
-/*!*************************************************************!*\
-  !*** ../parse-email/node_modules/node-rsa/src/libs/jsbn.js ***!
-  \*************************************************************/
+/***/ "../node_modules/node-rsa/src/libs/jsbn.js":
+/*!*************************************************!*\
+  !*** ../node_modules/node-rsa/src/libs/jsbn.js ***!
+  \*************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4310,7 +4516,7 @@ module.exports = {
  */
 
 var crypt = __webpack_require__(/*! crypto */ "crypto");
-var _ = __webpack_require__(/*! ../utils */ "../parse-email/node_modules/node-rsa/src/utils.js")._;
+var _ = __webpack_require__(/*! ../utils */ "../node_modules/node-rsa/src/utils.js")._;
 
 // Bits per digit
 var dbits;
@@ -5814,10 +6020,10 @@ module.exports = BigInteger;
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/node-rsa/src/libs/rsa.js":
-/*!************************************************************!*\
-  !*** ../parse-email/node_modules/node-rsa/src/libs/rsa.js ***!
-  \************************************************************/
+/***/ "../node_modules/node-rsa/src/libs/rsa.js":
+/*!************************************************!*\
+  !*** ../node_modules/node-rsa/src/libs/rsa.js ***!
+  \************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -5862,12 +6068,12 @@ module.exports = BigInteger;
  * 2014 rzcoder
  */
 
-var _ = __webpack_require__(/*! ../utils */ "../parse-email/node_modules/node-rsa/src/utils.js")._;
+var _ = __webpack_require__(/*! ../utils */ "../node_modules/node-rsa/src/utils.js")._;
 var crypt = __webpack_require__(/*! crypto */ "crypto");
-var BigInteger = __webpack_require__(/*! ./jsbn.js */ "../parse-email/node_modules/node-rsa/src/libs/jsbn.js");
-var utils = __webpack_require__(/*! ../utils.js */ "../parse-email/node_modules/node-rsa/src/utils.js");
-var schemes = __webpack_require__(/*! ../schemes/schemes.js */ "../parse-email/node_modules/node-rsa/src/schemes/schemes.js");
-var encryptEngines = __webpack_require__(/*! ../encryptEngines/encryptEngines.js */ "../parse-email/node_modules/node-rsa/src/encryptEngines/encryptEngines.js");
+var BigInteger = __webpack_require__(/*! ./jsbn.js */ "../node_modules/node-rsa/src/libs/jsbn.js");
+var utils = __webpack_require__(/*! ../utils.js */ "../node_modules/node-rsa/src/utils.js");
+var schemes = __webpack_require__(/*! ../schemes/schemes.js */ "../node_modules/node-rsa/src/schemes/schemes.js");
+var encryptEngines = __webpack_require__(/*! ../encryptEngines/encryptEngines.js */ "../node_modules/node-rsa/src/encryptEngines/encryptEngines.js");
 
 exports.BigInteger = BigInteger;
 module.exports.Key = (function () {
@@ -6095,7 +6301,7 @@ module.exports.Key = (function () {
      * Check if key pair contains private key
      */
     RSAKey.prototype.isPrivate = function () {
-        return this.n && this.e && this.d || false;
+        return this.n && this.e && this.d && true || false;
     };
 
     /**
@@ -6141,10 +6347,10 @@ module.exports.Key = (function () {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/node-rsa/src/schemes/oaep.js":
-/*!****************************************************************!*\
-  !*** ../parse-email/node_modules/node-rsa/src/schemes/oaep.js ***!
-  \****************************************************************/
+/***/ "../node_modules/node-rsa/src/schemes/oaep.js":
+/*!****************************************************!*\
+  !*** ../node_modules/node-rsa/src/schemes/oaep.js ***!
+  \****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -6152,7 +6358,7 @@ module.exports.Key = (function () {
  * PKCS_OAEP signature scheme
  */
 
-var BigInteger = __webpack_require__(/*! ../libs/jsbn */ "../parse-email/node_modules/node-rsa/src/libs/jsbn.js");
+var BigInteger = __webpack_require__(/*! ../libs/jsbn */ "../node_modules/node-rsa/src/libs/jsbn.js");
 var crypt = __webpack_require__(/*! crypto */ "crypto");
 
 module.exports = {
@@ -6331,10 +6537,10 @@ module.exports.makeScheme = function (key, options) {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/node-rsa/src/schemes/pkcs1.js":
-/*!*****************************************************************!*\
-  !*** ../parse-email/node_modules/node-rsa/src/schemes/pkcs1.js ***!
-  \*****************************************************************/
+/***/ "../node_modules/node-rsa/src/schemes/pkcs1.js":
+/*!*****************************************************!*\
+  !*** ../node_modules/node-rsa/src/schemes/pkcs1.js ***!
+  \*****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -6342,7 +6548,7 @@ module.exports.makeScheme = function (key, options) {
  * PKCS1 padding and signature scheme
  */
 
-var BigInteger = __webpack_require__(/*! ../libs/jsbn */ "../parse-email/node_modules/node-rsa/src/libs/jsbn.js");
+var BigInteger = __webpack_require__(/*! ../libs/jsbn */ "../node_modules/node-rsa/src/libs/jsbn.js");
 var crypt = __webpack_require__(/*! crypto */ "crypto");
 var constants = __webpack_require__(/*! constants */ "constants");
 var SIGN_INFO_HEAD = {
@@ -6580,10 +6786,10 @@ module.exports.makeScheme = function (key, options) {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/node-rsa/src/schemes/pss.js":
-/*!***************************************************************!*\
-  !*** ../parse-email/node_modules/node-rsa/src/schemes/pss.js ***!
-  \***************************************************************/
+/***/ "../node_modules/node-rsa/src/schemes/pss.js":
+/*!***************************************************!*\
+  !*** ../node_modules/node-rsa/src/schemes/pss.js ***!
+  \***************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -6591,7 +6797,7 @@ module.exports.makeScheme = function (key, options) {
  * PSS signature scheme
  */
 
-var BigInteger = __webpack_require__(/*! ../libs/jsbn */ "../parse-email/node_modules/node-rsa/src/libs/jsbn.js");
+var BigInteger = __webpack_require__(/*! ../libs/jsbn */ "../node_modules/node-rsa/src/libs/jsbn.js");
 var crypt = __webpack_require__(/*! crypto */ "crypto");
 
 module.exports = {
@@ -6603,7 +6809,7 @@ var DEFAULT_HASH_FUNCTION = 'sha1';
 var DEFAULT_SALT_LENGTH = 20;
 
 module.exports.makeScheme = function (key, options) {
-    var OAEP = __webpack_require__(/*! ./schemes */ "../parse-email/node_modules/node-rsa/src/schemes/schemes.js").pkcs1_oaep;
+    var OAEP = __webpack_require__(/*! ./schemes */ "../node_modules/node-rsa/src/schemes/schemes.js").pkcs1_oaep;
 
     /**
      * @param key
@@ -6774,17 +6980,17 @@ module.exports.makeScheme = function (key, options) {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/node-rsa/src/schemes/schemes.js":
-/*!*******************************************************************!*\
-  !*** ../parse-email/node_modules/node-rsa/src/schemes/schemes.js ***!
-  \*******************************************************************/
+/***/ "../node_modules/node-rsa/src/schemes/schemes.js":
+/*!*******************************************************!*\
+  !*** ../node_modules/node-rsa/src/schemes/schemes.js ***!
+  \*******************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = {
-    pkcs1: __webpack_require__(/*! ./pkcs1 */ "../parse-email/node_modules/node-rsa/src/schemes/pkcs1.js"),
-    pkcs1_oaep: __webpack_require__(/*! ./oaep */ "../parse-email/node_modules/node-rsa/src/schemes/oaep.js"),
-    pss: __webpack_require__(/*! ./pss */ "../parse-email/node_modules/node-rsa/src/schemes/pss.js"),
+    pkcs1: __webpack_require__(/*! ./pkcs1 */ "../node_modules/node-rsa/src/schemes/pkcs1.js"),
+    pkcs1_oaep: __webpack_require__(/*! ./oaep */ "../node_modules/node-rsa/src/schemes/oaep.js"),
+    pss: __webpack_require__(/*! ./pss */ "../node_modules/node-rsa/src/schemes/pss.js"),
 
     /**
      * Check if scheme has padding methods
@@ -6807,10 +7013,10 @@ module.exports = {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/node-rsa/src/utils.js":
-/*!*********************************************************!*\
-  !*** ../parse-email/node_modules/node-rsa/src/utils.js ***!
-  \*********************************************************/
+/***/ "../node_modules/node-rsa/src/utils.js":
+/*!*********************************************!*\
+  !*** ../node_modules/node-rsa/src/utils.js ***!
+  \*********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -6856,7 +7062,7 @@ module.exports.get32IntFromBuffer = function (buffer, offset) {
     var size = 0;
     if ((size = buffer.length - offset) > 0) {
         if (size >= 4) {
-            return buffer.readUInt32BE(offset);
+            return buffer.readUIntBE(offset, size);
         } else {
             var res = 0;
             for (var i = offset + size, d = 0; i > offset; i--, d += 2) {
@@ -6925,10 +7131,10 @@ module.exports.trimSurroundingText = function (data, opening, closing) {
 
 /***/ }),
 
-/***/ "../parse-email/node_modules/safer-buffer/safer.js":
-/*!*********************************************************!*\
-  !*** ../parse-email/node_modules/safer-buffer/safer.js ***!
-  \*********************************************************/
+/***/ "../node_modules/safer-buffer/safer.js":
+/*!*********************************************!*\
+  !*** ../node_modules/safer-buffer/safer.js ***!
+  \*********************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -7014,6 +7220,103 @@ module.exports = safer
 
 /***/ }),
 
+/***/ "../parse-email/browser.js":
+/*!*********************************!*\
+  !*** ../parse-email/browser.js ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+  parse and return email data
+  (browser)
+*/
+const Hashes = __webpack_require__(/*! jshashes */ "../node_modules/jshashes/hashes.js");
+const parse = __webpack_require__(/*! ./parse */ "../parse-email/parse.js");
+const toSolidity = __webpack_require__(/*! ./utils/toSolidity */ "../parse-email/utils/toSolidity.js");
+const publicKeyToComponents = __webpack_require__(/*! ./utils/publicKeyToComponents */ "../parse-email/utils/publicKeyToComponents.js");
+
+const main = email => {
+  return new Promise(async (resolve, reject) => {
+    // get dkims
+    const dkims = parse(email).dkims.map(dkim => {
+      const algorithm = dkim.algorithm
+        .split("-")
+        .pop()
+        .toUpperCase();
+
+      const bodyHashMatched =
+        new Hashes[algorithm]().hex(dkim.processedBody) ===
+        dkim.signature.hash.toString("hex");
+
+      if (!bodyHashMatched) {
+        return reject("body hash did not verify");
+      }
+
+      const hash = new Hashes[algorithm]().hex(dkim.processedHeader);
+
+      return {
+        ...dkim,
+        hash
+      };
+    });
+
+    // get dns records
+    const publicKeys = await fetch("/api/getPublicKeys", {
+      method: "POST",
+      mode: "same-origin",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      referrer: "no-referrer",
+      body: JSON.stringify(
+        dkims.map(dkim => ({
+          domain: dkim.signature.domain,
+          selector: dkim.signature.selector
+        }))
+      )
+    })
+      .then(res => res.json())
+      .then(entries => {
+        return entries.map(entry => {
+          const { publicKey } = entry;
+          const { exponent, modulus } = publicKeyToComponents(publicKey);
+
+          return {
+            ...entry,
+            exponent,
+            modulus
+          };
+        });
+      })
+      .catch(reject);
+
+    return resolve(
+      dkims.map((dkim, i) => {
+        const solidity = toSolidity({
+          algorithm: dkim.algorithm,
+          hash: dkim.hash,
+          signature: dkim.signature.signature,
+          exponent: publicKeys[i].exponent,
+          modulus: publicKeys[i].modulus
+        });
+
+        return {
+          ...dkim,
+          ...publicKeys[i],
+          solidity
+        };
+      })
+    );
+  });
+};
+
+module.exports = main;
+
+
+/***/ }),
+
 /***/ "../parse-email/parse.js":
 /*!*******************************!*\
   !*** ../parse-email/parse.js ***!
@@ -7025,9 +7328,9 @@ module.exports = safer
   parse email
   (cross-platform)
 */
-const Signature = __webpack_require__(/*! dkim-signature */ "../parse-email/node_modules/dkim-signature/lib/signature.js");
-const processHeader = __webpack_require__(/*! dkim/lib/process-header */ "../parse-email/node_modules/dkim/lib/process-header.js");
-const processBody = __webpack_require__(/*! dkim/lib/process-body */ "../parse-email/node_modules/dkim/lib/process-body.js");
+const Signature = __webpack_require__(/*! dkim-signature */ "../node_modules/dkim-signature/lib/signature.js");
+const processHeader = __webpack_require__(/*! dkim/lib/process-header */ "../node_modules/dkim/lib/process-header.js");
+const processBody = __webpack_require__(/*! dkim/lib/process-body */ "../node_modules/dkim/lib/process-body.js");
 const isDKIM = __webpack_require__(/*! ./utils/isDKIM */ "../parse-email/utils/isDKIM.js");
 
 const emailToHeaderAndBody = email => {
@@ -7140,7 +7443,7 @@ module.exports = isDKIM;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-const NodeRSA = __webpack_require__(/*! node-rsa */ "../parse-email/node_modules/node-rsa/src/NodeRSA.js");
+const NodeRSA = __webpack_require__(/*! node-rsa */ "../node_modules/node-rsa/src/NodeRSA.js");
 
 const publicKeyToComponents = publicKey => {
   const parsed = new NodeRSA(publicKey);
@@ -7421,12 +7724,10 @@ const Home = Object(mobx_react__WEBPACK_IMPORTED_MODULE_4__["observer"])(() => {
     className: "jsx-2659604651 " + styled_jsx_style__WEBPACK_IMPORTED_MODULE_2___default.a.dynamic([["4003161", [disabled ? "0.5" : "1"]]]) + " " + "not-verified"
   }, result.name, ": not verified \uD83D\uDE14")) : "", __jsx(styled_jsx_style__WEBPACK_IMPORTED_MODULE_2___default.a, {
     id: "2659604651"
-  }, "body{margin:0;padding:0;font-family:sans-serif;color:#003c7d;}\n/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9ob21lL2VzdG9qbm92c2t5L0Rldi9BbWJpcmUvZGttaS9zb2xpZGl0eS1ka2ltL2NsaWVudC9zcmMvSG9tZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBeUp5QixBQUdvQixTQUNDLFVBQ2EsdUJBQ1QsY0FDaEIiLCJmaWxlIjoiL2hvbWUvZXN0b2pub3Zza3kvRGV2L0FtYmlyZS9ka21pL3NvbGlkaXR5LWRraW0vY2xpZW50L3NyYy9Ib21lLnRzeCIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IHVzZVN0YXRlLCB1c2VDYWxsYmFjayB9IGZyb20gXCJyZWFjdFwiO1xuaW1wb3J0IHsgb2JzZXJ2ZXIgfSBmcm9tIFwibW9ieC1yZWFjdFwiO1xuaW1wb3J0IERyb3B6b25lIGZyb20gXCJyZWFjdC1kcm9wem9uZVwiO1xuaW1wb3J0IE1ldGFtYXNrIGZyb20gXCIuL2NvbXBvbmVudHMvTWV0YU1hc2tcIjtcbmltcG9ydCBldGggZnJvbSBcIi4vc3RvcmVzL2V0aFwiO1xuaW1wb3J0IHsgSW5zZXJ0RHJpdmVGaWxlT3V0bGluZWQsIEF0dGFjaEZpbGUgfSBmcm9tIFwiQG1hdGVyaWFsLXVpL2ljb25zXCI7XG5pbXBvcnQgcGFyc2VFbWFpbCBmcm9tIFwiLi9wYXJzZS1lbWFpbC9icm93c2VyXCI7XG5pbXBvcnQgdG9Tb2xpZGl0eSBmcm9tIFwiLi9wYXJzZS1lbWFpbC91dGlscy90b1NvbGlkaXR5XCI7XG5cbmNvbnN0IHZlcmlmeSA9IChlbWFpbDogc3RyaW5nKTogUHJvbWlzZTxhbnk+ID0+IHtcbiAgcmV0dXJuIG5ldyBQcm9taXNlKGFzeW5jIChyZXNvbHZlLCByZWplY3QpID0+IHtcbiAgICBjb25zdCBES0lNID0gYXdhaXQgZXRoLmdldENvbnRyYWN0KFwiREtJTVwiKS5jYXRjaChyZWplY3QpO1xuXG4gICAgY29uc3QgZGtpbXMgPSBhd2FpdCBwYXJzZUVtYWlsKGVtYWlsKTtcblxuICAgIGNvbnN0IGRraW1zSW5CeXRlcyA9IGRraW1zLm1hcChka2ltID0+IHtcbiAgICAgIHJldHVybiB0b1NvbGlkaXR5KHtcbiAgICAgICAgYWxnb3JpdGhtOiBka2ltLmFsZ29yaXRobSxcbiAgICAgICAgaGFzaDogZGtpbS5oYXNoLFxuICAgICAgICBzaWduYXR1cmU6IGRraW0uc2lnbmF0dXJlLnNpZ25hdHVyZSxcbiAgICAgICAgZXhwb25lbnQ6IGRraW0uZXhwb25lbnQsXG4gICAgICAgIG1vZHVsdXM6IGRraW0ubW9kdWx1c1xuICAgICAgfSk7XG4gICAgfSk7XG5cbiAgICBjb25zdCByZXN1bHQgPSBQcm9taXNlLmFsbChcbiAgICAgIGRraW1zSW5CeXRlcy5tYXAoKGRraW0sIGkpID0+IHtcbiAgICAgICAgcmV0dXJuIERLSU0udmVyaWZ5KFxuICAgICAgICAgIGRraW0uYWxnb3JpdGhtLFxuICAgICAgICAgIGRraW0uaGFzaCxcbiAgICAgICAgICBka2ltLnNpZ25hdHVyZSxcbiAgICAgICAgICBka2ltLmV4cG9uZW50LFxuICAgICAgICAgIGRraW0ubW9kdWx1c1xuICAgICAgICApLnRoZW4ocmVzID0+ICh7XG4gICAgICAgICAgbmFtZTogZGtpbXNbaV0uZW50cnkubmFtZSxcbiAgICAgICAgICB2ZXJpZmllZDogcmVzW1wiMFwiXVxuICAgICAgICB9KSk7XG4gICAgICB9KVxuICAgICkuY2F0Y2gocmVqZWN0KTtcblxuICAgIHJldHVybiByZXNvbHZlKHJlc3VsdCk7XG4gIH0pO1xufTtcblxuY29uc3QgSG9tZSA9IG9ic2VydmVyKCgpID0+IHtcbiAgY29uc3QgW2VtYWlsLCBzZXRFbWFpbF0gPSB1c2VTdGF0ZShudWxsKTtcbiAgY29uc3QgW2Vycm9yLCBzZXRFcnJvcl0gPSB1c2VTdGF0ZShudWxsKTtcbiAgY29uc3QgW3ZlcmlmaWVkLCBzZXRWZXJpZmllZF0gPSB1c2VTdGF0ZShbXSk7XG4gIGNvbnN0IFtkcmFnZ2luZywgc2V0RHJhZ10gPSB1c2VTdGF0ZShmYWxzZSk7XG4gIGNvbnN0IGRpc2FibGVkID1cbiAgICAhZXRoLmlzSW5zdGFsbGVkIHx8XG4gICAgIShldGgubmV0d29yayA9PT0gXCJzZXBvbGlhXCIgfHwgZXRoLm5ldHdvcmsgPT09IFwidW5rbm93biBuZXR3b3JrXCIpO1xuXG4gIGNvbnN0IG9uRHJvcCA9IHVzZUNhbGxiYWNrKGZpbGVzID0+IHtcbiAgICBzZXRFbWFpbChudWxsKTtcbiAgICBzZXRFcnJvcihudWxsKTtcbiAgICBzZXRWZXJpZmllZChbXSk7XG5cbiAgICBpZiAoZmlsZXMubGVuZ3RoIDwgMSkge1xuICAgICAgcmV0dXJuIHNldEVycm9yKFwibm8gZmlsZSBpbmNsdWRlZFwiKTtcbiAgICB9XG4gICAgY29uc3QgZmlsZSA9IGZpbGVzWzBdO1xuXG4gICAgY29uc3QgcmVhZGVyID0gbmV3IEZpbGVSZWFkZXIoKTtcblxuICAgIHJlYWRlci5vbmFib3J0ID0gKCkgPT4gc2V0RXJyb3IoXCJmaWxlIHJlYWRpbmcgd2FzIGFib3J0ZWRcIik7XG4gICAgcmVhZGVyLm9uZXJyb3IgPSAoKSA9PiBzZXRFcnJvcihcImZpbGUgcmVhZGluZyBoYXMgZmFpbGVkXCIpO1xuICAgIHJlYWRlci5vbmxvYWQgPSAoKSA9PiBzZXRFbWFpbChyZWFkZXIucmVzdWx0KTtcblxuICAgIHJlYWRlci5yZWFkQXNUZXh0KGZpbGUpO1xuICB9LCBbXSk7XG5cbiAgcmV0dXJuIChcbiAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbnRhaW5lclwiPlxuICAgICAgPGgyPnNvbGlkaXR5LWRraW0gZGVtbzwvaDI+XG5cbiAgICAgIDxNZXRhbWFzayAvPlxuICAgICAgPERyb3B6b25lXG4gICAgICAgIG9uRHJvcD17b25Ecm9wfVxuICAgICAgICBtdWx0aXBsZT17ZmFsc2V9XG4gICAgICAgIG9uRHJhZ0VudGVyPXsoKSA9PiBzZXREcmFnKHRydWUpfVxuICAgICAgICBvbkRyYWdMZWF2ZT17KCkgPT4gc2V0RHJhZyhmYWxzZSl9XG4gICAgICA+XG4gICAgICAgIHsoeyBnZXRSb290UHJvcHMsIGdldElucHV0UHJvcHMgfSkgPT4gKFxuICAgICAgICAgIDxzZWN0aW9uPlxuICAgICAgICAgICAgPGRpdlxuICAgICAgICAgICAgICB7Li4uZ2V0Um9vdFByb3BzKHtcbiAgICAgICAgICAgICAgICBzdHlsZToge1xuICAgICAgICAgICAgICAgICAgd2lkdGg6IFwiNTB2d1wiLFxuICAgICAgICAgICAgICAgICAgaGVpZ2h0OiBcIjMwdmhcIixcbiAgICAgICAgICAgICAgICAgIGFsaWduSXRlbXM6IFwiY2VudGVyXCIsXG4gICAgICAgICAgICAgICAgICBqdXN0aWZ5Q29udGVudDogXCJjZW50ZXJcIixcbiAgICAgICAgICAgICAgICAgIGRpc3BsYXk6IFwiZmxleFwiLFxuICAgICAgICAgICAgICAgICAgYm9yZGVyOlxuICAgICAgICAgICAgICAgICAgICBkcmFnZ2luZyB8fCBlbWFpbFxuICAgICAgICAgICAgICAgICAgICAgID8gXCIzcHggc29saWQgIzM4N2ZjN1wiXG4gICAgICAgICAgICAgICAgICAgICAgOiBcIjNweCBkYXNoZWQgIzM4N2ZjN1wiLFxuICAgICAgICAgICAgICAgICAgYmFja2dyb3VuZENvbG9yOiBcIndoaXRlXCIsXG4gICAgICAgICAgICAgICAgICBtYXJnaW46IFwiNTBweFwiLFxuICAgICAgICAgICAgICAgICAgYm9yZGVyUmFkaXVzOiBcIjNweFwiLFxuICAgICAgICAgICAgICAgICAgY3Vyc29yOiBcInBvaW50ZXJcIlxuICAgICAgICAgICAgICAgIH1cbiAgICAgICAgICAgICAgfSl9XG4gICAgICAgICAgICA+XG4gICAgICAgICAgICAgIDxpbnB1dCB7Li4uZ2V0SW5wdXRQcm9wcygpfSAvPlxuICAgICAgICAgICAgICB7ZW1haWwgPyAoXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmaWxlVXBsb2FkZWRcIj5cbiAgICAgICAgICAgICAgICAgIDxJbnNlcnREcml2ZUZpbGVPdXRsaW5lZFxuICAgICAgICAgICAgICAgICAgICBzdHlsZT17eyBoZWlnaHQ6IFwiOHZoXCIsIHdpZHRoOiBcImF1dG9cIiwgY29sb3I6IFwiIzM5N2VjN1wiIH19XG4gICAgICAgICAgICAgICAgICAvPntcIiBcIn1cbiAgICAgICAgICAgICAgICAgIEZJTEUgTE9BREVEXG4gICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICkgOiAoXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmaWxlVXBsb2FkZWRcIj5cbiAgICAgICAgICAgICAgICAgIDxBdHRhY2hGaWxlXG4gICAgICAgICAgICAgICAgICAgIHN0eWxlPXt7IGhlaWdodDogXCI4dmhcIiwgd2lkdGg6IFwiYXV0b1wiLCBjb2xvcjogXCIjMzk3ZWM3XCIgfX1cbiAgICAgICAgICAgICAgICAgIC8+XG4gICAgICAgICAgICAgICAgICA8cD5EcmFnICduJyBkcm9wIHNvbWUgZmlsZXMgaGVyZSwgb3IgY2xpY2sgdG8gc2VsZWN0IGZpbGVzPC9wPlxuICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICApfVxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgPC9zZWN0aW9uPlxuICAgICAgICApfVxuICAgICAgPC9Ecm9wem9uZT5cblxuICAgICAgPGJ1dHRvblxuICAgICAgICBvbkNsaWNrPXsoKSA9PlxuICAgICAgICAgIHZlcmlmeShlbWFpbClcbiAgICAgICAgICAgIC50aGVuKHNldFZlcmlmaWVkKVxuICAgICAgICAgICAgLmNhdGNoKHNldEVycm9yKVxuICAgICAgICB9XG4gICAgICAgIGRpc2FibGVkPXtkaXNhYmxlZH1cbiAgICAgID5cbiAgICAgICAgVmVyaWZ5XG4gICAgICA8L2J1dHRvbj5cbiAgICAgIHtlcnJvciA/IChcbiAgICAgICAgPHAgY2xhc3NOYW1lPVwiZXJyb3JcIj5lcnJvcjoge2Vycm9yfTwvcD5cbiAgICAgICkgOiB2ZXJpZmllZC5sZW5ndGggPiAwID8gKFxuICAgICAgICB2ZXJpZmllZC5tYXAocmVzdWx0ID0+XG4gICAgICAgICAgcmVzdWx0LnZlcmlmaWVkID8gKFxuICAgICAgICAgICAgPGgxIGtleT17cmVzdWx0Lm5hbWV9IGNsYXNzTmFtZT1cInZlcmlmaWVkXCI+XG4gICAgICAgICAgICAgIHtyZXN1bHQubmFtZX06IHZlcmlmaWVkISDwn46JXG4gICAgICAgICAgICA8L2gxPlxuICAgICAgICAgICkgOiAoXG4gICAgICAgICAgICA8aDEga2V5PXtyZXN1bHQubmFtZX0gY2xhc3NOYW1lPVwibm90LXZlcmlmaWVkXCI+XG4gICAgICAgICAgICAgIHtyZXN1bHQubmFtZX06IG5vdCB2ZXJpZmllZCDwn5iUXG4gICAgICAgICAgICA8L2gxPlxuICAgICAgICAgIClcbiAgICAgICAgKVxuICAgICAgKSA6IChcbiAgICAgICAgXCJcIlxuICAgICAgKX1cblxuICAgICAgPHN0eWxlIGpzeCBnbG9iYWw+e2BcbiAgICAgICAgYm9keSB7XG4gICAgICAgICAgbWFyZ2luOiAwO1xuICAgICAgICAgIHBhZGRpbmc6IDA7XG4gICAgICAgICAgZm9udC1mYW1pbHk6IHNhbnMtc2VyaWY7XG4gICAgICAgICAgY29sb3I6ICMwMDNjN2Q7XG4gICAgICAgIH1cbiAgICAgIGB9PC9zdHlsZT5cblxuICAgICAgPHN0eWxlIGpzeD57YFxuICAgICAgICAuY29udGFpbmVyIHtcbiAgICAgICAgICBkaXNwbGF5OiBmbGV4O1xuICAgICAgICAgIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XG4gICAgICAgICAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbiAgICAgICAgICBqdXN0aWZ5LWNvbnRlbnQ6IGZsZXgtc3RhcnQ7XG4gICAgICAgICAgd2lkdGg6IDEwMHZ3O1xuICAgICAgICAgIGhlaWdodDogMTAwdmg7XG4gICAgICAgICAgYmFja2dyb3VuZDogYWxpY2VibHVlO1xuICAgICAgICB9XG4gICAgICAgIGgyIHtcbiAgICAgICAgICBtYXJnaW4tdG9wOiAxMDBweDtcbiAgICAgICAgICBtYXJnaW4tYm90dG9tOiAzMHB4O1xuICAgICAgICB9XG4gICAgICAgIGgxIHtcbiAgICAgICAgfVxuICAgICAgICBidXR0b24ge1xuICAgICAgICAgIGhlaWdodDogMzBweDtcbiAgICAgICAgICB3aWR0aDogMTIwcHg7XG4gICAgICAgICAgYm9yZGVyLXJhZGl1czogM3B4O1xuICAgICAgICAgIGJhY2tncm91bmQ6ICMzOTdlYzc7XG4gICAgICAgICAgY29sb3I6IHdoaXRlO1xuICAgICAgICAgIGJvcmRlcjogbm9uZTtcbiAgICAgICAgICBmb250LWZhbWlseTogc2Fucy1zZXJpZjtcbiAgICAgICAgICBmb250LXNpemU6IDE2cHg7XG4gICAgICAgICAgY3Vyc29yOiBwb2ludGVyO1xuICAgICAgICAgIG9wYWNpdHk6ICR7ZGlzYWJsZWQgPyBcIjAuNVwiIDogXCIxXCJ9O1xuICAgICAgICB9XG4gICAgICAgIC5lcnJvciB7XG4gICAgICAgICAgY29sb3I6ICNkNjAwMDA7XG4gICAgICAgIH1cbiAgICAgICAgLnZlcmlmaWVkIHtcbiAgICAgICAgICBjb2xvcjogIzAwYmIzOTtcbiAgICAgICAgfVxuICAgICAgICAubm90LXZlcmlmaWVkIHtcbiAgICAgICAgICBjb2xvcjogI2Q2MDAwMDtcbiAgICAgICAgfVxuICAgICAgICAuZmlsZVVwbG9hZGVkIHtcbiAgICAgICAgICBoZWlnaHQ6IDEydmg7XG4gICAgICAgICAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7XG4gICAgICAgICAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbiAgICAgICAgICBkaXNwbGF5OiBmbGV4O1xuICAgICAgICAgIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47XG4gICAgICAgIH1cbiAgICAgIGB9PC9zdHlsZT5cbiAgICA8L2Rpdj5cbiAgKTtcbn0pO1xuXG5leHBvcnQgZGVmYXVsdCBIb21lO1xuIl19 */\n/*@ sourceURL=/home/estojnovsky/Dev/Ambire/dkmi/solidity-dkim/client/src/Home.tsx */"), __jsx(styled_jsx_style__WEBPACK_IMPORTED_MODULE_2___default.a, {
+  }, ["body{margin:0;padding:0;font-family:sans-serif;color:#003c7d;}"]), __jsx(styled_jsx_style__WEBPACK_IMPORTED_MODULE_2___default.a, {
     id: "4003161",
     dynamic: [disabled ? "0.5" : "1"]
-  }, `.container.__jsx-style-dynamic-selector{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;-webkit-align-items:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:start;-webkit-justify-content:flex-start;-ms-flex-pack:start;justify-content:flex-start;width:100vw;height:100vh;background:aliceblue;}h2.__jsx-style-dynamic-selector{margin-top:100px;margin-bottom:30px;}button.__jsx-style-dynamic-selector{height:30px;width:120px;border-radius:3px;background:#397ec7;color:white;border:none;font-family:sans-serif;font-size:16px;cursor:pointer;opacity:${disabled ? "0.5" : "1"};}.error.__jsx-style-dynamic-selector{color:#d60000;}.verified.__jsx-style-dynamic-selector{color:#00bb39;}.not-verified.__jsx-style-dynamic-selector{color:#d60000;}.fileUploaded.__jsx-style-dynamic-selector{height:12vh;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;-webkit-align-items:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;}
-/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9ob21lL2VzdG9qbm92c2t5L0Rldi9BbWJpcmUvZGttaS9zb2xpZGl0eS1ka2ltL2NsaWVudC9zcmMvSG9tZS50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBa0trQixBQUd3QixBQVNJLEFBTUwsQUFZRSxBQUdBLEFBR0EsQUFHRixZQXBCQSxBQXFCVyxFQVR6QixBQUdBLEFBR0EsR0F4QnFCLE9BT0QsWUFOcEIsTUFPcUIsbUJBQ1AsWUFDQSxDQW5CVSxXQW9CQyx1QkFDUixHQWdCSSxZQWZKLGVBQ3NCLGNBdEJsQix1QkF1QnJCLDZCQWNlLHlDQXBDYyxpQ0FxQ0wsd0VBcENWLE1BcUNkLE1BcENlLGFBQ1EscUJBQ3ZCIiwiZmlsZSI6Ii9ob21lL2VzdG9qbm92c2t5L0Rldi9BbWJpcmUvZGttaS9zb2xpZGl0eS1ka2ltL2NsaWVudC9zcmMvSG9tZS50c3giLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyB1c2VTdGF0ZSwgdXNlQ2FsbGJhY2sgfSBmcm9tIFwicmVhY3RcIjtcbmltcG9ydCB7IG9ic2VydmVyIH0gZnJvbSBcIm1vYngtcmVhY3RcIjtcbmltcG9ydCBEcm9wem9uZSBmcm9tIFwicmVhY3QtZHJvcHpvbmVcIjtcbmltcG9ydCBNZXRhbWFzayBmcm9tIFwiLi9jb21wb25lbnRzL01ldGFNYXNrXCI7XG5pbXBvcnQgZXRoIGZyb20gXCIuL3N0b3Jlcy9ldGhcIjtcbmltcG9ydCB7IEluc2VydERyaXZlRmlsZU91dGxpbmVkLCBBdHRhY2hGaWxlIH0gZnJvbSBcIkBtYXRlcmlhbC11aS9pY29uc1wiO1xuaW1wb3J0IHBhcnNlRW1haWwgZnJvbSBcIi4vcGFyc2UtZW1haWwvYnJvd3NlclwiO1xuaW1wb3J0IHRvU29saWRpdHkgZnJvbSBcIi4vcGFyc2UtZW1haWwvdXRpbHMvdG9Tb2xpZGl0eVwiO1xuXG5jb25zdCB2ZXJpZnkgPSAoZW1haWw6IHN0cmluZyk6IFByb21pc2U8YW55PiA9PiB7XG4gIHJldHVybiBuZXcgUHJvbWlzZShhc3luYyAocmVzb2x2ZSwgcmVqZWN0KSA9PiB7XG4gICAgY29uc3QgREtJTSA9IGF3YWl0IGV0aC5nZXRDb250cmFjdChcIkRLSU1cIikuY2F0Y2gocmVqZWN0KTtcblxuICAgIGNvbnN0IGRraW1zID0gYXdhaXQgcGFyc2VFbWFpbChlbWFpbCk7XG5cbiAgICBjb25zdCBka2ltc0luQnl0ZXMgPSBka2ltcy5tYXAoZGtpbSA9PiB7XG4gICAgICByZXR1cm4gdG9Tb2xpZGl0eSh7XG4gICAgICAgIGFsZ29yaXRobTogZGtpbS5hbGdvcml0aG0sXG4gICAgICAgIGhhc2g6IGRraW0uaGFzaCxcbiAgICAgICAgc2lnbmF0dXJlOiBka2ltLnNpZ25hdHVyZS5zaWduYXR1cmUsXG4gICAgICAgIGV4cG9uZW50OiBka2ltLmV4cG9uZW50LFxuICAgICAgICBtb2R1bHVzOiBka2ltLm1vZHVsdXNcbiAgICAgIH0pO1xuICAgIH0pO1xuXG4gICAgY29uc3QgcmVzdWx0ID0gUHJvbWlzZS5hbGwoXG4gICAgICBka2ltc0luQnl0ZXMubWFwKChka2ltLCBpKSA9PiB7XG4gICAgICAgIHJldHVybiBES0lNLnZlcmlmeShcbiAgICAgICAgICBka2ltLmFsZ29yaXRobSxcbiAgICAgICAgICBka2ltLmhhc2gsXG4gICAgICAgICAgZGtpbS5zaWduYXR1cmUsXG4gICAgICAgICAgZGtpbS5leHBvbmVudCxcbiAgICAgICAgICBka2ltLm1vZHVsdXNcbiAgICAgICAgKS50aGVuKHJlcyA9PiAoe1xuICAgICAgICAgIG5hbWU6IGRraW1zW2ldLmVudHJ5Lm5hbWUsXG4gICAgICAgICAgdmVyaWZpZWQ6IHJlc1tcIjBcIl1cbiAgICAgICAgfSkpO1xuICAgICAgfSlcbiAgICApLmNhdGNoKHJlamVjdCk7XG5cbiAgICByZXR1cm4gcmVzb2x2ZShyZXN1bHQpO1xuICB9KTtcbn07XG5cbmNvbnN0IEhvbWUgPSBvYnNlcnZlcigoKSA9PiB7XG4gIGNvbnN0IFtlbWFpbCwgc2V0RW1haWxdID0gdXNlU3RhdGUobnVsbCk7XG4gIGNvbnN0IFtlcnJvciwgc2V0RXJyb3JdID0gdXNlU3RhdGUobnVsbCk7XG4gIGNvbnN0IFt2ZXJpZmllZCwgc2V0VmVyaWZpZWRdID0gdXNlU3RhdGUoW10pO1xuICBjb25zdCBbZHJhZ2dpbmcsIHNldERyYWddID0gdXNlU3RhdGUoZmFsc2UpO1xuICBjb25zdCBkaXNhYmxlZCA9XG4gICAgIWV0aC5pc0luc3RhbGxlZCB8fFxuICAgICEoZXRoLm5ldHdvcmsgPT09IFwic2Vwb2xpYVwiIHx8IGV0aC5uZXR3b3JrID09PSBcInVua25vd24gbmV0d29ya1wiKTtcblxuICBjb25zdCBvbkRyb3AgPSB1c2VDYWxsYmFjayhmaWxlcyA9PiB7XG4gICAgc2V0RW1haWwobnVsbCk7XG4gICAgc2V0RXJyb3IobnVsbCk7XG4gICAgc2V0VmVyaWZpZWQoW10pO1xuXG4gICAgaWYgKGZpbGVzLmxlbmd0aCA8IDEpIHtcbiAgICAgIHJldHVybiBzZXRFcnJvcihcIm5vIGZpbGUgaW5jbHVkZWRcIik7XG4gICAgfVxuICAgIGNvbnN0IGZpbGUgPSBmaWxlc1swXTtcblxuICAgIGNvbnN0IHJlYWRlciA9IG5ldyBGaWxlUmVhZGVyKCk7XG5cbiAgICByZWFkZXIub25hYm9ydCA9ICgpID0+IHNldEVycm9yKFwiZmlsZSByZWFkaW5nIHdhcyBhYm9ydGVkXCIpO1xuICAgIHJlYWRlci5vbmVycm9yID0gKCkgPT4gc2V0RXJyb3IoXCJmaWxlIHJlYWRpbmcgaGFzIGZhaWxlZFwiKTtcbiAgICByZWFkZXIub25sb2FkID0gKCkgPT4gc2V0RW1haWwocmVhZGVyLnJlc3VsdCk7XG5cbiAgICByZWFkZXIucmVhZEFzVGV4dChmaWxlKTtcbiAgfSwgW10pO1xuXG4gIHJldHVybiAoXG4gICAgPGRpdiBjbGFzc05hbWU9XCJjb250YWluZXJcIj5cbiAgICAgIDxoMj5zb2xpZGl0eS1ka2ltIGRlbW88L2gyPlxuXG4gICAgICA8TWV0YW1hc2sgLz5cbiAgICAgIDxEcm9wem9uZVxuICAgICAgICBvbkRyb3A9e29uRHJvcH1cbiAgICAgICAgbXVsdGlwbGU9e2ZhbHNlfVxuICAgICAgICBvbkRyYWdFbnRlcj17KCkgPT4gc2V0RHJhZyh0cnVlKX1cbiAgICAgICAgb25EcmFnTGVhdmU9eygpID0+IHNldERyYWcoZmFsc2UpfVxuICAgICAgPlxuICAgICAgICB7KHsgZ2V0Um9vdFByb3BzLCBnZXRJbnB1dFByb3BzIH0pID0+IChcbiAgICAgICAgICA8c2VjdGlvbj5cbiAgICAgICAgICAgIDxkaXZcbiAgICAgICAgICAgICAgey4uLmdldFJvb3RQcm9wcyh7XG4gICAgICAgICAgICAgICAgc3R5bGU6IHtcbiAgICAgICAgICAgICAgICAgIHdpZHRoOiBcIjUwdndcIixcbiAgICAgICAgICAgICAgICAgIGhlaWdodDogXCIzMHZoXCIsXG4gICAgICAgICAgICAgICAgICBhbGlnbkl0ZW1zOiBcImNlbnRlclwiLFxuICAgICAgICAgICAgICAgICAganVzdGlmeUNvbnRlbnQ6IFwiY2VudGVyXCIsXG4gICAgICAgICAgICAgICAgICBkaXNwbGF5OiBcImZsZXhcIixcbiAgICAgICAgICAgICAgICAgIGJvcmRlcjpcbiAgICAgICAgICAgICAgICAgICAgZHJhZ2dpbmcgfHwgZW1haWxcbiAgICAgICAgICAgICAgICAgICAgICA/IFwiM3B4IHNvbGlkICMzODdmYzdcIlxuICAgICAgICAgICAgICAgICAgICAgIDogXCIzcHggZGFzaGVkICMzODdmYzdcIixcbiAgICAgICAgICAgICAgICAgIGJhY2tncm91bmRDb2xvcjogXCJ3aGl0ZVwiLFxuICAgICAgICAgICAgICAgICAgbWFyZ2luOiBcIjUwcHhcIixcbiAgICAgICAgICAgICAgICAgIGJvcmRlclJhZGl1czogXCIzcHhcIixcbiAgICAgICAgICAgICAgICAgIGN1cnNvcjogXCJwb2ludGVyXCJcbiAgICAgICAgICAgICAgICB9XG4gICAgICAgICAgICAgIH0pfVxuICAgICAgICAgICAgPlxuICAgICAgICAgICAgICA8aW5wdXQgey4uLmdldElucHV0UHJvcHMoKX0gLz5cbiAgICAgICAgICAgICAge2VtYWlsID8gKFxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmlsZVVwbG9hZGVkXCI+XG4gICAgICAgICAgICAgICAgICA8SW5zZXJ0RHJpdmVGaWxlT3V0bGluZWRcbiAgICAgICAgICAgICAgICAgICAgc3R5bGU9e3sgaGVpZ2h0OiBcIjh2aFwiLCB3aWR0aDogXCJhdXRvXCIsIGNvbG9yOiBcIiMzOTdlYzdcIiB9fVxuICAgICAgICAgICAgICAgICAgLz57XCIgXCJ9XG4gICAgICAgICAgICAgICAgICBGSUxFIExPQURFRFxuICAgICAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgICAgICApIDogKFxuICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmlsZVVwbG9hZGVkXCI+XG4gICAgICAgICAgICAgICAgICA8QXR0YWNoRmlsZVxuICAgICAgICAgICAgICAgICAgICBzdHlsZT17eyBoZWlnaHQ6IFwiOHZoXCIsIHdpZHRoOiBcImF1dG9cIiwgY29sb3I6IFwiIzM5N2VjN1wiIH19XG4gICAgICAgICAgICAgICAgICAvPlxuICAgICAgICAgICAgICAgICAgPHA+RHJhZyAnbicgZHJvcCBzb21lIGZpbGVzIGhlcmUsIG9yIGNsaWNrIHRvIHNlbGVjdCBmaWxlczwvcD5cbiAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgKX1cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgIDwvc2VjdGlvbj5cbiAgICAgICAgKX1cbiAgICAgIDwvRHJvcHpvbmU+XG5cbiAgICAgIDxidXR0b25cbiAgICAgICAgb25DbGljaz17KCkgPT5cbiAgICAgICAgICB2ZXJpZnkoZW1haWwpXG4gICAgICAgICAgICAudGhlbihzZXRWZXJpZmllZClcbiAgICAgICAgICAgIC5jYXRjaChzZXRFcnJvcilcbiAgICAgICAgfVxuICAgICAgICBkaXNhYmxlZD17ZGlzYWJsZWR9XG4gICAgICA+XG4gICAgICAgIFZlcmlmeVxuICAgICAgPC9idXR0b24+XG4gICAgICB7ZXJyb3IgPyAoXG4gICAgICAgIDxwIGNsYXNzTmFtZT1cImVycm9yXCI+ZXJyb3I6IHtlcnJvcn08L3A+XG4gICAgICApIDogdmVyaWZpZWQubGVuZ3RoID4gMCA/IChcbiAgICAgICAgdmVyaWZpZWQubWFwKHJlc3VsdCA9PlxuICAgICAgICAgIHJlc3VsdC52ZXJpZmllZCA/IChcbiAgICAgICAgICAgIDxoMSBrZXk9e3Jlc3VsdC5uYW1lfSBjbGFzc05hbWU9XCJ2ZXJpZmllZFwiPlxuICAgICAgICAgICAgICB7cmVzdWx0Lm5hbWV9OiB2ZXJpZmllZCEg8J+OiVxuICAgICAgICAgICAgPC9oMT5cbiAgICAgICAgICApIDogKFxuICAgICAgICAgICAgPGgxIGtleT17cmVzdWx0Lm5hbWV9IGNsYXNzTmFtZT1cIm5vdC12ZXJpZmllZFwiPlxuICAgICAgICAgICAgICB7cmVzdWx0Lm5hbWV9OiBub3QgdmVyaWZpZWQg8J+YlFxuICAgICAgICAgICAgPC9oMT5cbiAgICAgICAgICApXG4gICAgICAgIClcbiAgICAgICkgOiAoXG4gICAgICAgIFwiXCJcbiAgICAgICl9XG5cbiAgICAgIDxzdHlsZSBqc3ggZ2xvYmFsPntgXG4gICAgICAgIGJvZHkge1xuICAgICAgICAgIG1hcmdpbjogMDtcbiAgICAgICAgICBwYWRkaW5nOiAwO1xuICAgICAgICAgIGZvbnQtZmFtaWx5OiBzYW5zLXNlcmlmO1xuICAgICAgICAgIGNvbG9yOiAjMDAzYzdkO1xuICAgICAgICB9XG4gICAgICBgfTwvc3R5bGU+XG5cbiAgICAgIDxzdHlsZSBqc3g+e2BcbiAgICAgICAgLmNvbnRhaW5lciB7XG4gICAgICAgICAgZGlzcGxheTogZmxleDtcbiAgICAgICAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uO1xuICAgICAgICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7XG4gICAgICAgICAganVzdGlmeS1jb250ZW50OiBmbGV4LXN0YXJ0O1xuICAgICAgICAgIHdpZHRoOiAxMDB2dztcbiAgICAgICAgICBoZWlnaHQ6IDEwMHZoO1xuICAgICAgICAgIGJhY2tncm91bmQ6IGFsaWNlYmx1ZTtcbiAgICAgICAgfVxuICAgICAgICBoMiB7XG4gICAgICAgICAgbWFyZ2luLXRvcDogMTAwcHg7XG4gICAgICAgICAgbWFyZ2luLWJvdHRvbTogMzBweDtcbiAgICAgICAgfVxuICAgICAgICBoMSB7XG4gICAgICAgIH1cbiAgICAgICAgYnV0dG9uIHtcbiAgICAgICAgICBoZWlnaHQ6IDMwcHg7XG4gICAgICAgICAgd2lkdGg6IDEyMHB4O1xuICAgICAgICAgIGJvcmRlci1yYWRpdXM6IDNweDtcbiAgICAgICAgICBiYWNrZ3JvdW5kOiAjMzk3ZWM3O1xuICAgICAgICAgIGNvbG9yOiB3aGl0ZTtcbiAgICAgICAgICBib3JkZXI6IG5vbmU7XG4gICAgICAgICAgZm9udC1mYW1pbHk6IHNhbnMtc2VyaWY7XG4gICAgICAgICAgZm9udC1zaXplOiAxNnB4O1xuICAgICAgICAgIGN1cnNvcjogcG9pbnRlcjtcbiAgICAgICAgICBvcGFjaXR5OiAke2Rpc2FibGVkID8gXCIwLjVcIiA6IFwiMVwifTtcbiAgICAgICAgfVxuICAgICAgICAuZXJyb3Ige1xuICAgICAgICAgIGNvbG9yOiAjZDYwMDAwO1xuICAgICAgICB9XG4gICAgICAgIC52ZXJpZmllZCB7XG4gICAgICAgICAgY29sb3I6ICMwMGJiMzk7XG4gICAgICAgIH1cbiAgICAgICAgLm5vdC12ZXJpZmllZCB7XG4gICAgICAgICAgY29sb3I6ICNkNjAwMDA7XG4gICAgICAgIH1cbiAgICAgICAgLmZpbGVVcGxvYWRlZCB7XG4gICAgICAgICAgaGVpZ2h0OiAxMnZoO1xuICAgICAgICAgIGp1c3RpZnktY29udGVudDogY2VudGVyO1xuICAgICAgICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7XG4gICAgICAgICAgZGlzcGxheTogZmxleDtcbiAgICAgICAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uO1xuICAgICAgICB9XG4gICAgICBgfTwvc3R5bGU+XG4gICAgPC9kaXY+XG4gICk7XG59KTtcblxuZXhwb3J0IGRlZmF1bHQgSG9tZTtcbiJdfQ== */
-/*@ sourceURL=/home/estojnovsky/Dev/Ambire/dkmi/solidity-dkim/client/src/Home.tsx */`));
+  }, [".container.__jsx-style-dynamic-selector{display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;-webkit-align-items:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:start;-webkit-justify-content:flex-start;-ms-flex-pack:start;justify-content:flex-start;width:100vw;height:100vh;background:aliceblue;}", "h2.__jsx-style-dynamic-selector{margin-top:100px;margin-bottom:30px;}", `button.__jsx-style-dynamic-selector{height:30px;width:120px;border-radius:3px;background:#397ec7;color:white;border:none;font-family:sans-serif;font-size:16px;cursor:pointer;opacity:${disabled ? "0.5" : "1"};}`, ".error.__jsx-style-dynamic-selector{color:#d60000;}", ".verified.__jsx-style-dynamic-selector{color:#00bb39;}", ".not-verified.__jsx-style-dynamic-selector{color:#d60000;}", ".fileUploaded.__jsx-style-dynamic-selector{height:12vh;-webkit-box-pack:center;-webkit-justify-content:center;-ms-flex-pack:center;justify-content:center;-webkit-align-items:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:column;-ms-flex-direction:column;flex-direction:column;}"]));
 });
 /* harmony default export */ __webpack_exports__["default"] = (Home);
 
@@ -7497,9 +7798,7 @@ const Metamask = Object(mobx_react__WEBPACK_IMPORTED_MODULE_2__["observer"])(() 
   }), GetText(_stores_eth__WEBPACK_IMPORTED_MODULE_3__["default"]), __jsx(styled_jsx_style__WEBPACK_IMPORTED_MODULE_0___default.a, {
     id: "792589829",
     dynamic: [isLoggedIn ? "#56A2BA" : "#387fc7", isLoggedIn ? "#56A2BA" : "#387fc7"]
-  }, `.img.__jsx-style-dynamic-selector{width:4vh;height:4vh;padding-right:1vh;}.metamaskStatus.__jsx-style-dynamic-selector{background-color:#fafafa;border:1px solid ${isLoggedIn ? "#56A2BA" : "#387fc7"};color:${isLoggedIn ? "#56A2BA" : "#387fc7"};border-radius:3px;padding-left:2vh;padding-right:2vh;font-size:calc(12px + 0.4vw);height:4.5vh;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:row;-ms-flex-direction:row;flex-direction:row;-webkit-box-pack:space-evenly;-webkit-justify-content:space-evenly;-ms-flex-pack:space-evenly;justify-content:space-evenly;-webkit-align-items:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;}
-/*# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9ob21lL2VzdG9qbm92c2t5L0Rldi9BbWJpcmUvZGttaS9zb2xpZGl0eS1ka2ltL2NsaWVudC9zcmMvY29tcG9uZW50cy9NZXRhTWFzay50c3giXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBNkNrQixBQUdxQixBQUtlLFVBSmQsV0FDTyxJQUk0QixjQUhoRCxnQ0FJcUMsbUNBQ2pCLGtCQUNELGlCQUNDLGtCQUNXLDZCQUNoQixhQUNBLDBFQUNNLHFFQUNVLDJIQUNWLDZGQUNyQiIsImZpbGUiOiIvaG9tZS9lc3Rvam5vdnNreS9EZXYvQW1iaXJlL2RrbWkvc29saWRpdHktZGtpbS9jbGllbnQvc3JjL2NvbXBvbmVudHMvTWV0YU1hc2sudHN4Iiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgb2JzZXJ2ZXIgfSBmcm9tIFwibW9ieC1yZWFjdFwiO1xuaW1wb3J0IGV0aFN0b3JlIGZyb20gXCIuLi9zdG9yZXMvZXRoXCI7XG5cbmNvbnN0IEdldFRleHQgPSAoe1xuICBpc0luc3RhbGxlZCxcbiAgaXNMb2dnZWRJbixcbiAgYWNjb3VudCxcbiAgbmV0d29ya1xufTogdHlwZW9mIGV0aFN0b3JlKSA9PiB7XG4gIGlmICghaXNJbnN0YWxsZWQpIHtcbiAgICByZXR1cm4gKFxuICAgICAgPGFcbiAgICAgICAgaHJlZj1cImh0dHBzOi8vbWV0YW1hc2suaW8vXCJcbiAgICAgICAgdGFyZ2V0PVwiX2JsYW5rXCJcbiAgICAgICAgcmVsPVwibm9vcGVuZXIgbm9yZWZlcnJlclwiXG4gICAgICAgIHN0eWxlPXt7IGNvbG9yOiBcIiMzODdmYzdcIiwgdGV4dERlY29yYXRpb246IFwibm9uZVwiIH19XG4gICAgICA+XG4gICAgICAgIElOU1RBTEwgTUVUQU1BU0tcbiAgICAgIDwvYT5cbiAgICApO1xuICB9XG5cbiAgcmV0dXJuIChcbiAgICA8ZGl2IHN0eWxlPXt7IGRpc3BsYXk6IFwiZmxleFwiLCBmbGV4RGlyZWN0aW9uOiBcInJvd1wiIH19PlxuICAgICAge2FjY291bnQgPyAoXG4gICAgICAgIDxkaXYgc3R5bGU9e3sgcGFkZGluZ1JpZ2h0OiBcIjF2aFwiIH19PntgWyR7YWNjb3VudH1dYH08L2Rpdj5cbiAgICAgICkgOiBudWxsfVxuXG4gICAgICA8ZGl2PntuZXR3b3JrfTwvZGl2PlxuICAgIDwvZGl2PlxuICApO1xufTtcblxuY29uc3QgTWV0YW1hc2sgPSBvYnNlcnZlcigoKSA9PiB7XG4gIGNvbnN0IHsgaXNMb2dnZWRJbiB9ID0gZXRoU3RvcmU7XG5cbiAgcmV0dXJuIChcbiAgICA8ZGl2IGNsYXNzTmFtZT1cIm1ldGFtYXNrU3RhdHVzXCI+XG4gICAgICA8aW1nXG4gICAgICAgIHNyYz1cIi9zdGF0aWMvaW1hZ2VzL21ldGFtYXNrLnBuZ1wiXG4gICAgICAgIGFsdD1cIk1ldGFtYXNrIExvZ29cIlxuICAgICAgICBjbGFzc05hbWU9XCJpbWdcIlxuICAgICAgLz5cbiAgICAgIHtHZXRUZXh0KGV0aFN0b3JlKX1cblxuICAgICAgPHN0eWxlIGpzeD57YFxuICAgICAgICAuaW1nIHtcbiAgICAgICAgICB3aWR0aDogNHZoO1xuICAgICAgICAgIGhlaWdodDogNHZoO1xuICAgICAgICAgIHBhZGRpbmctcmlnaHQ6IDF2aDtcbiAgICAgICAgfVxuICAgICAgICAubWV0YW1hc2tTdGF0dXMge1xuICAgICAgICAgIGJhY2tncm91bmQtY29sb3I6ICNmYWZhZmE7XG4gICAgICAgICAgYm9yZGVyOiAxcHggc29saWQgJHtpc0xvZ2dlZEluID8gXCIjNTZBMkJBXCIgOiBcIiMzODdmYzdcIn07XG4gICAgICAgICAgY29sb3I6ICR7aXNMb2dnZWRJbiA/IFwiIzU2QTJCQVwiIDogXCIjMzg3ZmM3XCJ9O1xuICAgICAgICAgIGJvcmRlci1yYWRpdXM6IDNweDtcbiAgICAgICAgICBwYWRkaW5nLWxlZnQ6IDJ2aDtcbiAgICAgICAgICBwYWRkaW5nLXJpZ2h0OiAydmg7XG4gICAgICAgICAgZm9udC1zaXplOiBjYWxjKDEycHggKyAwLjR2dyk7XG4gICAgICAgICAgaGVpZ2h0OiA0LjV2aDtcbiAgICAgICAgICBkaXNwbGF5OiBmbGV4O1xuICAgICAgICAgIGZsZXgtZGlyZWN0aW9uOiByb3c7XG4gICAgICAgICAganVzdGlmeS1jb250ZW50OiBzcGFjZS1ldmVubHk7XG4gICAgICAgICAgYWxpZ24taXRlbXM6IGNlbnRlcjtcbiAgICAgICAgfVxuICAgICAgYH08L3N0eWxlPlxuICAgIDwvZGl2PlxuICApO1xufSk7XG5cbmV4cG9ydCBkZWZhdWx0IE1ldGFtYXNrO1xuIl19 */
-/*@ sourceURL=/home/estojnovsky/Dev/Ambire/dkmi/solidity-dkim/client/src/components/MetaMask.tsx */`));
+  }, [".img.__jsx-style-dynamic-selector{width:4vh;height:4vh;padding-right:1vh;}", `.metamaskStatus.__jsx-style-dynamic-selector{background-color:#fafafa;border:1px solid ${isLoggedIn ? "#56A2BA" : "#387fc7"};color:${isLoggedIn ? "#56A2BA" : "#387fc7"};border-radius:3px;padding-left:2vh;padding-right:2vh;font-size:calc(12px + 0.4vw);height:4.5vh;display:-webkit-box;display:-webkit-flex;display:-ms-flexbox;display:flex;-webkit-flex-direction:row;-ms-flex-direction:row;flex-direction:row;-webkit-box-pack:space-evenly;-webkit-justify-content:space-evenly;-ms-flex-pack:space-evenly;justify-content:space-evenly;-webkit-align-items:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center;}`]));
 });
 /* harmony default export */ __webpack_exports__["default"] = (Metamask);
 
@@ -7795,7 +8094,7 @@ const isSSR = true;
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /home/estojnovsky/Dev/Ambire/dkmi/solidity-dkim/client/pages/index.tsx */"./pages/index.tsx");
+module.exports = __webpack_require__(/*! /home/devlabs-php/Desktop/projects/ambire/bs/solidity-dkim/client/pages/index.tsx */"./pages/index.tsx");
 
 
 /***/ }),
