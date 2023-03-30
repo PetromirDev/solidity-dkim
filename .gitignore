@@ -1,5 +1,3 @@
+.vercel/
 node_modules/
-.next/
-mnemonic.json
-infura.json
-.vercel
+.github/

@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const { promisify } = require("util");
 const DKIM = artifacts.require("./DKIM.sol");
-const parseEmail = require("../parse-email/node");
+const parseEmail = require("parse-email/node");
 
 const readFile = promisify(fs.readFile);
 const emailsPath = path.join(__dirname, "emails");

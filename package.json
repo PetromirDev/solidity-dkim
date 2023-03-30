@@ -1,28 +1,41 @@
 {
-  "name": "solidity-dkim",
+  "name": "solidity-dkim-demo",
   "version": "1.0.0",
-  "description": "Verify DKIM signatures in solidity.",
+  "description": "A demo application showcasing solidity-dkim",
   "scripts": {
-    "compile": "truffle compile",
-    "dev": "truffle develop",
-    "test": "truffle test",
-    "migrate": "truffle migrate"
+    "preinstall": "cd ../ && yarn install",
+    "dev": "node server.js",
+    "build": "next build",
+    "export": "next export",
+    "start": "NODE_ENV=production node server.js"
   },
-  "license": "MIT",
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "@ensdomains/buffer": "0.0.10",
+    "@material-ui/core": "^4.3.1",
+    "@material-ui/icons": "^4.2.1",
+    "@next/bundle-analyzer": "^9.0.3",
     "dkim": "^0.7.0",
     "dkim-key": "^1.3.0",
     "dkim-signature": "^1.3.0",
+    "ethjs": "^0.4.0",
+    "ethjs-abi": "^0.2.1",
+    "express": "^4.17.1",
     "jshashes": "^1.0.7",
+    "mobx": "^5.13.0",
+    "mobx-react": "^6.1.3",
+    "mobx-state-tree": "^3.14.1",
+    "next": "^9.0.3",
     "node-rsa": "^1.0.6",
-    "truffle-privatekey-provider": "^1.5.0"
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-dropzone": "^10.1.10",
+    "styled-jsx": "^3.2.1"
   },
   "devDependencies": {
-    "@truffle/hdwallet-provider": "^1.0.24",
-    "chai": "^4.2.0",
-    "eth-gas-reporter": "^0.2.12",
-    "openzeppelin-test-helpers": "^0.5.1",
-    "truffle": "^5.0.43"
+    "@babel/plugin-proposal-decorators": "^7.4.4",
+    "@types/node": "^12.7.1",
+    "@types/react": "^16.8.25",
+    "typescript": "^3.5.3"
   }
 }

@@ -2,7 +2,7 @@ const path = require("path");
 const fs = require("fs");
 const { promisify } = require("util");
 const Service = artifacts.require("./Service.sol");
-const parseEmail = require("../parse-email/node");
+const parseEmail = require("parse-email/node");
 const { expectEvent, expectRevert } = require("../helpers/OpenZeppelin")(web3);
 
 const readFile = promisify(fs.readFile);
