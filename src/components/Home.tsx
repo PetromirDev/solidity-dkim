@@ -9,6 +9,9 @@ import parseEmail from '../parse-email/browser'
 import toSolidity from '../parse-email/utils/toSolidity'
 import GlobalStyle from '../styles'
 import dynamic from 'next/dynamic'
+import Verified from './Verified'
+import Instructions from './Instructions'
+import Head from 'next/head'
 
 const verify = (email: string): Promise<any> => {
 	return new Promise(async (resolve, reject) => {
@@ -46,7 +49,7 @@ const Home = observer(() => {
 	const [error, setError] = useState(null)
 	const [verified, setVerified] = useState([])
 	const [dragging, setDrag] = useState(false)
-	const disabled = !eth.isInstalled || !(eth.network === 'sepolia' || eth.network === 'unknown network')
+	const disabled = !eth.isInstalled || !(eth.network === 'sepolia' || eth.network === 'unknown network') && !email?.name
 
 	const onDrop = useCallback((files) => {
 		setEmail(null)
@@ -62,13 +65,20 @@ const Home = observer(() => {
 
 		reader.onabort = () => setError('file reading was aborted')
 		reader.onerror = () => setError('file reading has failed')
-		reader.onload = () => setEmail(reader.result)
-
+		reader.onload = () => setEmail({
+			name: file.name,
+			content: reader.result
+		})
 		reader.readAsText(file)
 	}, [])
 
 	return (
 		<>
+			<Head>
+				<link rel="preconnect" href="https://fonts.googleapis.com" />
+				<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+				<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" /> 
+			</Head>
 			<GlobalStyle />
 			<Container>
 				<Body>
@@ -83,9 +93,10 @@ const Home = observer(() => {
 						{({ getRootProps, getInputProps }) => (
 							<DragNDrop {...getRootProps()}>
 								<input {...getInputProps()} />
-								{email ? (
+								{email?.name ? (
 									<FileStatus>
-										<InsertDriveFileOutlined /> FILE LOADED
+										<InsertDriveFileOutlined /> 
+										<p>{email.name} loaded</p>
 									</FileStatus>
 								) : (
 									<FileStatus>
@@ -97,45 +108,20 @@ const Home = observer(() => {
 						)}
 					</Dropzone>
 
-					<VerifyButton onClick={() => verify(email).then(setVerified).catch(setError)} disabled={disabled}>
+					<VerifyButton onClick={() => verify(email.content).then(setVerified).catch(setError)} disabled={disabled}>
 						Verify
 					</VerifyButton>
 					{error ? (
 						<p className="error">error: {error}</p>
 					) : verified.length > 0 ? (
 						verified.map((result) =>
-							result.verified ? (
-								<div className="verified__wrapper">
-									<h1 key={result.name} className="verified">
-										{result.name}: verified! 🎉
-									</h1>
-									<p className="verified__signature">
-										<b>Signature:</b> {result.signatureData.signature}
-									</p>
-									<p>
-										<b>Domain:</b> {result.signatureData && result.signatureData.domain}
-									</p>
-									<p>
-										<b>Expires:</b>{' '}
-										{result.signatureData &&
-											new Date(Number(result.signatureData.expires + 1000)).toLocaleString('en-US', {
-												weekday: 'long',
-												day: 'numeric',
-												month: '2-digit',
-												year: 'numeric'
-											})}
-									</p>
-								</div>
-							) : (
-								<h1 key={result.name} className="not-verified">
-									{result.name}: not verified 😔
-								</h1>
-							)
+							<Verified key={result.name} result={result} />
 						)
 					) : (
 						''
 					)}
 				</Body>
+				<Instructions />
 			</Container>
 		</>
 	)
@@ -149,6 +135,10 @@ const Container = styled.div`
 	padding: 2.5rem;
 	width: 100%;
 	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 4rem;
 
 	background: hsla(10, 89%, 70%, 1);
 	background: linear-gradient(45deg, hsla(10, 89%, 70%, 1) 0%, hsla(350, 100%, 69%, 1) 100%);
@@ -160,6 +150,7 @@ const Container = styled.div`
 const Body = styled.div`
 	max-width: 80rem;
 	padding: 2.5rem;
+	width: 100%;
 	margin: 0 auto;
 
 	// Glass effect
@@ -177,7 +168,7 @@ const DragNDrop = styled.div`
 	justify-content: center;
 	align-items: center;
 	margin-bottom: 2rem;
-	min-height: 300px;
+	min-height: 12.5rem;
 	cursor: pointer;
 
 	// Glass effect
@@ -187,6 +178,25 @@ const DragNDrop = styled.div`
 	backdrop-filter: blur(5px);
 	-webkit-backdrop-filter: blur(5px);
 	border: 1px solid rgba(255, 255, 255, 0.3);
+
+	// Shake animation
+	@keyframes shake {
+  0% {
+    margin-left: 0rem;
+  }
+  25% {
+    margin-left: 0.5rem;
+  }
+  75% {
+    margin-left: -0.5rem;
+  }
+  100% {
+    margin-left: 0rem;
+  }
+}
+
+	${(props) => props.error && `animation: shake 0.2s ease-in-out 0s 2;`}
+
 `
 
 const FileStatus = styled.div`
@@ -194,12 +204,12 @@ const FileStatus = styled.div`
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	gap: 2rem;
+	gap: 1rem;
 
 	svg {
 		color: #303030;
-		width: 3.125rem;
-		height: 3.125rem;
+		width: 3rem;
+		height: 3rem;
 	}
 
 	p {
