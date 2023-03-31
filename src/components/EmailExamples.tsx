@@ -1,23 +1,20 @@
 import React, { useCallback } from 'react'
 import styled from 'styled-components'
-import GmailEML from '../../test/emails/gmail.eml'
-import ICloud from '../../test/emails/icloud.eml'
-import Outlook from '../../test/emails/outlook.eml'
-import ProtonMail from '../../test/emails/protonmail.eml'
-import Yahoo from '../../test/emails/yahoo.eml'
+
+import { Gmail, ICloud, Ambire, ProtonMail, Yahoo } from './emailExamplesList.js'
 
 const files = [
   {
     name: 'gmail.eml',
-    content: GmailEML
+    content: Gmail,
   },
   {
     name: 'icloud.eml',
     content: ICloud
   },
   {
-    name: 'outlook.eml',
-    content: Outlook
+    name: 'ambire.eml',
+    content: Ambire
   },
   {
     name: 'protonmail.eml',
@@ -30,7 +27,7 @@ const files = [
 ]
 
 export default function EmailExamples({ setEmail, setError }) {
-  const loadFile = useCallback((file, setEmail) => {
+  const loadFile = useCallback((file, setEmail, setError) => {
     setEmail({
       name: file.name,
       content: file.content
