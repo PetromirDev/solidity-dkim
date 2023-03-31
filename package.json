@@ -37,6 +37,7 @@
     "@babel/plugin-proposal-decorators": "^7.21.0",
     "@types/node": "^18.15.11",
     "@types/react": "^18.0.31",
+    "raw-loader": "^4.0.2",
     "typescript": "^5.0.3"
   }
 }
