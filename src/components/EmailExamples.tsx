@@ -32,6 +32,8 @@ export default function EmailExamples({ setEmail, setError }) {
       name: file.name,
       content: file.content
     })
+    setError(null)
+
   }, [setEmail])
 
   return (
