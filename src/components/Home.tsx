@@ -2,12 +2,13 @@ import { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import { observer } from 'mobx-react'
 import Dropzone from 'react-dropzone'
-import Metamask from './components/MetaMask'
-import eth from './stores/eth'
-import { InsertDriveFileOutlined, AttachFile } from '@material-ui/icons'
+import Metamask from './MetaMask'
+import eth from '../stores/eth'
+import { InsertDriveFileOutlined, AttachFile } from '@mui/icons-material'
 import parseEmail from '../parse-email/browser'
 import toSolidity from '../parse-email/utils/toSolidity'
-import GlobalStyle from './styles'
+import GlobalStyle from '../styles'
+import dynamic from 'next/dynamic'
 
 const verify = (email: string): Promise<any> => {
 	return new Promise(async (resolve, reject) => {
@@ -140,7 +141,9 @@ const Home = observer(() => {
 	)
 })
 
-export default Home
+export default dynamic(() => Promise.resolve(Home), {
+  ssr: false
+})
 
 const Container = styled.div`
 	padding: 2.5rem;

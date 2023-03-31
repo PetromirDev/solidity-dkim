@@ -49,8 +49,7 @@ const main = email => {
       )
     })
       .then(res => res.json())
-      .then(entries => {
-        return entries.map(entry => {
+      .then(entries => entries.map(entry => {
           const { publicKey } = entry;
           const { exponent, modulus } = publicKeyToComponents(publicKey);
 
@@ -59,8 +58,7 @@ const main = email => {
             exponent,
             modulus
           };
-        });
-      })
+        }))
       .catch(reject);
 
     return resolve(
