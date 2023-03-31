@@ -1,0 +1,159 @@
+Delivered-To: emil@ambire.com
+Received: by 2002:ab0:3f84:0:b0:765:7c32:2053 with SMTP id cv4csp365891uab;
+        Fri, 31 Mar 2023 02:34:31 -0700 (PDT)
+X-Received: by 2002:aa7:d39a:0:b0:4fd:2b05:aa2 with SMTP id x26-20020aa7d39a000000b004fd2b050aa2mr25906202edq.42.1680255271705;
+        Fri, 31 Mar 2023 02:34:31 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1680255271; cv=none;
+        d=google.com; s=arc-20160816;
+        b=P4idWL6Ra5YHBi83lOmPNvBIw1v3BBhQn3zvSoOEIH8eNkqVTXDAMyIueHPG/w3+vH
+         FiYcta095c0m/D6zX/kQ8eX5L1Zvwg3iA11G/eWDO5mF3UtsLSGEPaUYOiQHPzLrOe1a
+         BFrxMw7xl2eAsNjZhC80eCcAOuc+o934l4gQZD7P7NzOlcS8sHTQyftBfqjxrN0ftU4m
+         JP7wNUJban93sb4NWs7TFEeIyq/2TlnsrKle1mwZuyOpRA6k4UWGzayRhcHYWMfIj4PF
+         IkafPzop+/MewyvwwnRpCeJMD5P7OZTzxXJyc0Ui+B9JAkqOl7oh9kT8tX3/drGFYaqK
+         Qw3Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=cSnVjqif85UbqzfdUGH3pzVf86P3mmdvpqHSV8Mffz0=;
+        b=qovgNDYhsAp+Dk8gvilKHTfafFt/6B/an7zIu+xW3wBf8tuvYnpGh+wZ17/C3JeFXA
+         F2eGjICOJOuPdknXzjzxjeD8mNaICpV8kSK8itRjCdecj/7eMlcczHkTy0Uc+2LdGTQg
+         Jv6U8dnQTnhsAZ2nEO76bjcc89ThIrbEEaXP0ApLjssrxArScyO0nNCaudyo7IgM6dW9
+         x7Qjto7dm/5Bn53SHAf6htnk08m4Rj2u4m1aJYhGtSX8O+R3F2x+pkvotmc62ADrdiXm
+         m4kZu7dcIyBtObGr7WobEmIi8LZU3+8P6xkGBtYaZKISZY3fH51Bn8O6+Rk70SAjR8n1
+         bFzg==
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@ambire.com header.s=google header.b=LbjL9RBi;
+       spf=pass (google.com: domain of ivan@ambire.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=ivan@ambire.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=ambire.com
+Return-Path: <ivan@ambire.com>
+Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
+        by mx.google.com with SMTPS id hc43-20020a17090716ab00b0093fcc6295f4sor1195347ejc.53.2023.03.31.02.34.31
+        for <emil@ambire.com>
+        (Google Transport Security);
+        Fri, 31 Mar 2023 02:34:31 -0700 (PDT)
+Received-SPF: pass (google.com: domain of ivan@ambire.com designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@ambire.com header.s=google header.b=LbjL9RBi;
+       spf=pass (google.com: domain of ivan@ambire.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=ivan@ambire.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=ambire.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ambire.com; s=google; t=1680255271;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=cSnVjqif85UbqzfdUGH3pzVf86P3mmdvpqHSV8Mffz0=;
+        b=LbjL9RBiRYissK5CsOF37t24DPqR4ORA2zmWlRqzog20OgUzoZBJe7kO5IKUnlKEiM
+         gNuJvrVenErEuGZ7rgMCqKF3xAd7x0Lw54ekcFNLatLGHatiMxN+f+Z1GT8MdGzTLuWC
+         ql2Q3MmA0ys9qITEelIpsgvJ8LkdGy8j5g7wJ2KXfgMq2jVvfyR/iKIIbL4ohHpBz8+n
+         OSQFHJbYWTFs78FDb1jxoD/U2QjaPkzsBSgOEFW9SmwrIQ/iaxjyy+IrcwvT77GxVWoG
+         aB1j2pn2frnH2rWI5MLai/ZcmfAiN/YzXPIvIj1CX+LjHsX7AC/d1YXbb6+jM1oR3M7U
+         /wrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112; t=1680255271;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=cSnVjqif85UbqzfdUGH3pzVf86P3mmdvpqHSV8Mffz0=;
+        b=oAGXYwX7mb0MhecWAarV7ruetrYv7WVQ+NzkuSBHq9DPJMrC3qEY0GX4OV5M5E50cw
+         LnO+g8CvYkhp2YEHnQffwpBlIxRUnYg6KDotqAle9jnywFaq4xdke5ekgz+XFPHHeC+t
+         evzOCg3o2o9J5x143Uviiua4R7DSObFzO2qJQsRvAhw3Sqbjss3L/Nl3JrXSdJuwzjS0
+         242/ZVGEDtSXOjmz44K9C+fSfId/j2+Ojzu9t1VthH1dT4ggFGdTtoiYn22FPrLUecse
+         2AfzdynDAvWJrm/rVz6Aev4riwnwz+YIWxx7Imuj3+iXD/BVxaBlGsRAxFoowVpG9tG7
+         qLZQ==
+X-Gm-Message-State: AAQBX9ehBsKLLJyayNgVPShtWBV6NJE+VOdHxqyFHdoopxPKyYolsUoY
+	StOPcNsk+9n5TCKWswnkRZOC5hgDsFvu6/KVp1ftWAGMcsEh6wevBJk=
+X-Google-Smtp-Source: AKy350b9QD4LlrKEmTILUyJ8nIFbNTQxWARGqOuZNKehCpKtAUAqXFZ5ojsnl2ptChZxbBXoobetSJ+k2cTtA6mRX4s=
+X-Received: by 2002:a17:906:db02:b0:931:7350:a7b6 with SMTP id
+ xj2-20020a170906db0200b009317350a7b6mr14574991ejb.10.1680255271006; Fri, 31
+ Mar 2023 02:34:31 -0700 (PDT)
+MIME-Version: 1.0
+From: Ivan Manchev <ivan@ambire.com>
+Date: Fri, 31 Mar 2023 12:33:55 +0300
+Message-ID: <CAG-2Upib5Rwn5X=wYxWt6zJ7Fr_YDwpnY0SH3EPzZ+sjpAVP0A@mail.gmail.com>
+Subject: DKIM test (KUR)
+To: Emil Stojnovsky <emil@ambire.com>
+Content-Type: multipart/alternative; boundary="0000000000008f853505f82eea3c"
+
+--0000000000008f853505f82eea3c
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+--=20
+
+
+[image: photo]
+*Ivan Manchev*
+Communications Specialist
+
+ivan@ambire.com <vanina@ambire.com>
+
+https://www.ambire.com/
+PGP: 77A1 3E2C 7269 4ACC 516F  02B2 B107 BFF0 F224 BF1C
+<https://www.facebook.com/AmbireAdEx> <https://twitter.com/AmbireAdEx>
+<https://medium.com/the-ambire-blog> <https://www.reddit.com/r/AdEx/>
+<https://www.linkedin.com/company/ambiretech>
+=E2=80=8C
+
+--0000000000008f853505f82eea3c
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><br clear=3D"all"><div><br></div><span class=3D"gmail_sign=
+ature_prefix">-- </span><br><div dir=3D"ltr" class=3D"gmail_signature" data=
+-smartmail=3D"gmail_signature"><div dir=3D"ltr"><br><br style=3D"color:rgb(=
+34,34,34)"><div style=3D"color:rgb(34,34,34)"><table style=3D"direction:ltr=
+;border-radius:0px;border-collapse:collapse"><tbody><tr><td><table border=
+=3D"0" cellspacing=3D"0" cellpadding=3D"0" style=3D"max-width:470px;padding=
+-bottom:10px;margin-bottom:8px"><tbody><tr><td><table border=3D"0" cellspac=
+ing=3D"0" cellpadding=3D"0" width=3D"470" style=3D"width:470px"><tbody><tr =
+valign=3D"top"><td style=3D"width:10px;padding-right:10px"><img src=3D"http=
+s://d36urhup7zbd7q.cloudfront.net/d9111f25-96a9-47e9-8758-5af634b20116/Ambi=
+reVerticalLightBackground.format_png.resize_200x.png" width=3D"65" height=
+=3D"86.736" alt=3D"photo" style=3D"border-radius:0px;width:65px;height:86.7=
+36px;max-width:120px"></td><td style=3D"border-right:1px solid rgb(96,0,255=
+)"></td><td style=3D"font-stretch:normal;font-size:12px;line-height:normal;=
+font-family:Arial;text-align:initial;color:rgb(100,100,100);padding:0px 10p=
+x"><div style=3D"margin-bottom:5px;margin-top:0px!important"><b>Ivan Manche=
+v</b><br>Communications Specialist</div><table width=3D"470" border=3D"0" c=
+ellspacing=3D"0" cellpadding=3D"0" style=3D"width:470px;margin-top:5px"><tb=
+ody><tr><td style=3D"color:rgb(141,141,141)"><p style=3D"margin:0px"><span =
+style=3D"display:inline-block"><a href=3D"mailto:vanina@ambire.com" style=
+=3D"color:rgb(141,141,141);font-family:Arial" target=3D"_blank">ivan@ambire=
+.com</a></span></p></td></tr><tr><td style=3D"color:rgb(141,141,141)"><p st=
+yle=3D"margin:0px"><span style=3D"white-space:nowrap;display:inline-block">=
+<a href=3D"https://www.ambire.com/" style=3D"color:rgb(141,141,141);font-fa=
+mily:Arial" target=3D"_blank">https://www.ambire.com/</a></span></p></td></=
+tr><tr><td style=3D"font-family:Arial;color:rgb(141,141,141)"><span style=
+=3D"display:inline-block">PGP: 77A1 3E2C 7269 4ACC 516F=C2=A0 02B2 B107 BFF=
+0 F224 BF1C</span></td></tr></tbody></table><div style=3D"margin-top:10px">=
+<table border=3D"0" cellpadding=3D"0" cellspacing=3D"0"><tbody><tr><td alig=
+n=3D"left" style=3D"padding-right:6px;text-align:center;padding-top:0px"><a=
+ href=3D"https://www.facebook.com/AmbireAdEx" style=3D"color:rgb(68,68,68);=
+font-size:11px" target=3D"_blank"><img width=3D"32" height=3D"32" src=3D"ht=
+tps://cdn.gifo.wisestamp.com/social/facebook/6000FF/64/circle/background.pn=
+g" border=3D"0" style=3D"float:left;border:none"></a></td><td align=3D"left=
+" style=3D"padding-right:6px;text-align:center;padding-top:0px"><a href=3D"=
+https://twitter.com/AmbireAdEx" style=3D"color:rgb(68,68,68);font-size:11px=
+" target=3D"_blank"><img width=3D"32" height=3D"32" src=3D"https://cdn.gifo=
+.wisestamp.com/social/twitter/6000FF/64/circle/background.png" border=3D"0"=
+ style=3D"float:left;border:none"></a></td><td align=3D"left" style=3D"padd=
+ing-right:6px;text-align:center;padding-top:0px"><a href=3D"https://medium.=
+com/the-ambire-blog" style=3D"color:rgb(68,68,68);font-size:11px" target=3D=
+"_blank"><img width=3D"32" height=3D"32" src=3D"https://cdn.gifo.wisestamp.=
+com/social/medium/6000FF/64/circle/background.png" border=3D"0" style=3D"fl=
+oat:left;border:none"></a></td><td align=3D"left" style=3D"padding-right:6p=
+x;text-align:center;padding-top:0px"><a href=3D"https://www.reddit.com/r/Ad=
+Ex/" style=3D"color:rgb(68,68,68);font-size:11px" target=3D"_blank"><img wi=
+dth=3D"32" height=3D"32" src=3D"https://cdn.gifo.wisestamp.com/social/reddi=
+t/6000FF/64/circle/background.png" border=3D"0" style=3D"float:left;border:=
+none"></a></td><td align=3D"left" style=3D"padding-right:6px;text-align:cen=
+ter;padding-top:0px"><a href=3D"https://www.linkedin.com/company/ambiretech=
+" style=3D"color:rgb(68,68,68);font-size:11px" target=3D"_blank"><img width=
+=3D"32" height=3D"32" src=3D"https://cdn.gifo.wisestamp.com/social/linkedin=
+/6000FF/64/circle/background.png" border=3D"0" style=3D"float:left;border:n=
+one"></a></td></tr></tbody></table></div></td></tr></tbody></table></td></t=
+r></tbody></table><table cellpadding=3D"0" cellspacing=3D"0" border=3D"0" w=
+idth=3D"100%"><tbody><tr><td style=3D"line-height:0"></td></tr></tbody></ta=
+ble></td></tr></tbody></table><table cellspacing=3D"0" cellpadding=3D"0"><t=
+body><tr><td height=3D"1" width=3D"1" style=3D"height:1px!important;width:1=
+px!important;font-size:0px!important">=E2=80=8C</td></tr></tbody></table></=
+div></div></div></div>
+
+--0000000000008f853505f82eea3c--
