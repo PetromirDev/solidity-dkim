@@ -102,6 +102,7 @@ const Home = observer(() => {
 					<SideToSide>
 						<Dropzone
 							onDrop={onDrop}
+							disabled={!isInstalled || !isSepolia}
 							multiple={false}
 							onDragEnter={() => setDrag(true)}
 							onDragLeave={() => setDrag(false)}>
