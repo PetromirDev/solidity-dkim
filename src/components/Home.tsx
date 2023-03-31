@@ -240,8 +240,9 @@ const VerifyButton = styled.button`
 	}
 `
 const Error = styled.p`
-	background-color: #fdedee;
+	color: #f55151;
 	padding: 1rem;
+	text-align: center;
 `
 
 const Separator = styled.div`
