@@ -49,7 +49,10 @@ const main = email => {
       )
     })
       .then(res => res.json())
-      .then(entries => entries.map(entry => {
+      .then(entries => 
+        {
+          if (entries.error) reject(entries.error)
+          return entries.length && entries.map(entry => {
           const { publicKey } = entry;
           const { exponent, modulus } = publicKeyToComponents(publicKey);
 
@@ -58,11 +61,12 @@ const main = email => {
             exponent,
             modulus
           };
-        }))
-      .catch(reject);
+        })})
+    .catch(reject);
 
     return resolve(
       dkims.map((dkim, i) => {
+        if(!publicKeys || !publicKeys[i]) return
         const solidity = toSolidity({
           algorithm: dkim.algorithm,
           hash: dkim.hash,

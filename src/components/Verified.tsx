@@ -20,18 +20,17 @@ export default function Verified({ result }) {
 						<DataItemLabel>Domain</DataItemLabel>
 						<DataItemContent>{signatureData && signatureData.domain}</DataItemContent>
 					</DataItem>
-					<DataItem>
+					{signatureData && signatureData.expires && <DataItem>
 						<DataItemLabel>Expires</DataItemLabel>
 						<DataItemContent>
-							{signatureData &&
-								new Date(Number(signatureData.expires * 1000)).toLocaleString('en-US', {
-									weekday: 'long',
-									day: 'numeric',
-									month: '2-digit',
-									year: 'numeric'
-								})}
+							{new Date(Number(signatureData.expires + 1000)).toLocaleString('en-US', {
+								weekday: 'long',
+								day: 'numeric',
+								month: '2-digit',
+								year: 'numeric'
+							})}
 						</DataItemContent>
-					</DataItem>
+					</DataItem>}
 				</>
 			) : (
         <DataItem>

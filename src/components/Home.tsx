@@ -16,14 +16,16 @@ import Verified from './Verified'
 import Instructions from './Instructions'
 import GlobalStyle from '../styles'
 import EmailExamples from './EmailExamples'
+import ErrorBoundary from './ErrorBoundary'
 
 const verify = (email: string): Promise<any> => {
 	return new Promise(async (resolve, reject) => {
 		const DKIM = await eth.getContract('DKIM').catch(reject)
 
-		const dkims = await parseEmail(email)
+		const dkims = await parseEmail(email).catch(reject)
+		if (!dkims || !dkims.length) return
 
-		const dkimsInBytes = dkims.map((dkim) => {
+		const dkimsInBytes = dkims && dkims.map((dkim) => {
 			return toSolidity({
 				algorithm: dkim.algorithm,
 				hash: dkim.hash,
@@ -90,7 +92,7 @@ const Home = observer(() => {
 	}, [email?.content])
 
 	return (
-		<>
+		<ErrorBoundary>
 			<GlobalStyle />
 			<Container>
 				<Instructions />
@@ -126,7 +128,7 @@ const Home = observer(() => {
 						{!isDisabled ? 'Verify' : 'Please follow the instructions above'}
 					</VerifyButton>
 					{error ? (
-						<p className="error">error: {error}</p>
+						<Error className="error">Error: {error}</Error>
 					) : verified.length > 0 ? (
 						verified.map((result) => <Verified key={result.name} result={result} />)
 					) : (
@@ -134,7 +136,7 @@ const Home = observer(() => {
 					)}
 				</Body>
 			</Container>
-		</>
+		</ErrorBoundary>
 	)
 })
 
@@ -244,4 +246,10 @@ const VerifyButton = styled.button`
 	&:disabled {
 		opacity: 0.5;
 	}
+`
+const Error = styled.p`
+	color: red;
+	text-align: center;
+	margin: 10px 0;
+	font-weight: bold;
 `
