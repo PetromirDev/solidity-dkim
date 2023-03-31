@@ -53,28 +53,22 @@ const DataItem = styled.div`
 	display: flex;
 	flex-direction: column;
 	gap: .75rem;
-	color: #fff;
 `
 
 const DataItemLabel = styled.span`
 	padding: 0.4rem .75rem;
 	font-size: .75rem;
-	color: #242424;
+	color: #fff;
 	width: fit-content;
 	border-radius: 0.25rem;
   pointer-events: none;
 	font-weight: 400;
-
-	// Glass effect
-	background: rgba(255, 255, 255, 0.42);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+	background-color: #1e1e20;
 `
 
 const DataItemContent = styled.p`
   font-size: 1rem;
+	color: #8c8e90;
 `
 
 const SignatureData = styled(DataItemContent)`

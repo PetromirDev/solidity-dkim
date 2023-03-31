@@ -18,12 +18,13 @@ const GlobalStyle = createGlobalStyle`
   article, aside, canvas, details, embed, 
   figure, figcaption, footer, header, hgroup, 
   menu, nav, output, ruby, section, summary,
-  time, mark, audio, video {
+  time, mark, audio, video, button {
     margin: 0;
     padding: 0;
     border: 0;
     font-size: 100%;
     font: inherit;
+    color: inherit;
     vertical-align: baseline;
   }
   /* HTML5 display-role reset for older browsers */
@@ -52,6 +53,7 @@ const GlobalStyle = createGlobalStyle`
 
   html {
     font-family: 'Noto Sans', sans-serif;
+    color: #fffeff;
   }
 `
 

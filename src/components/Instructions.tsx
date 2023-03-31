@@ -33,7 +33,6 @@ const Wrapper = styled.div`
     
   text-align: center;
 	margin: 0 auto;
-  color: #fff;
 `
 
 const Title = styled.h2`

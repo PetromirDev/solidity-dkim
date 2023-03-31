@@ -35,7 +35,8 @@ export default function EmailExamples({ setEmail, setError }) {
   return (
     <Wrapper>
       <TitleWrapper>
-      <Title>Example emails</Title>
+        <Subtitle>Don't want to upload an email?</Subtitle>
+        <Title>Try one of our examples.</Title>
       </TitleWrapper>
       <Buttons>
 
@@ -50,9 +51,12 @@ export default function EmailExamples({ setEmail, setError }) {
 }
 
 const Wrapper = styled.div`
+  flex: 1;
   display: grid;
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  /* padding-bottom: 2.5rem; */
   grid-template-areas: 
+    'title'
     'title'
     'buttons'
     'buttons'
@@ -60,19 +64,25 @@ const Wrapper = styled.div`
   ;
 `
 
+const Subtitle = styled.h4`
+  text-align: center;
+  font-size: 1rem;
+  margin-bottom: .9375rem;
+  opacity: 1;
+`
 const TitleWrapper = styled.div`
   grid-area: title;
   padding-top: 1rem;
 `
 const Title = styled.h3`
   text-align: center;
-  color: #fff;
+  opacity: .9;
 `
 
 const Buttons = styled.div`
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(2, minmax(100px ,130px));
+  grid-template-columns: repeat(2, 1fr);
   gap: .5rem;
   grid-area: buttons;
 `
@@ -82,12 +92,8 @@ const EmailButton = styled.button`
   border-radius: .75rem;
   border: none;
   cursor: pointer;
-  max-height: 60px;
-
-  // Glass effect
-  background: rgba(255, 255, 255, 0.42);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #c9cbcd;
+  background-color: #1c1e1f;
+	border: 1px solid #303234;
+	border-radius: .75rem;
 `

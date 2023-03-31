@@ -45,14 +45,10 @@ const Wrapper = styled.div`
 	height: 3.75rem;
 	margin-bottom: 1rem;
   border-radius: 12px;
-  color: #0f0f0f;
+  color: #fff;
 
-  // Glass effect
-  background: rgba(255, 255, 255, 0.42);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+	background-color: #1c1e1f;
+	border: 1px solid #303234;
 `
 
 const Image = styled.img`

@@ -25,16 +25,18 @@ const verify = (email: string): Promise<any> => {
 		const dkims = await parseEmail(email).catch(reject)
 		if (!dkims || !dkims.length) return
 
-		const dkimsInBytes = dkims && dkims.map((dkim) => {
-			return toSolidity({
-				algorithm: dkim.algorithm,
-				hash: dkim.hash,
-				signature: dkim.signature.signature,
-				exponent: dkim.exponent,
-				modulus: dkim.modulus,
-				signatureData: dkim.signature
+		const dkimsInBytes =
+			dkims &&
+			dkims.map((dkim) => {
+				return toSolidity({
+					algorithm: dkim.algorithm,
+					hash: dkim.hash,
+					signature: dkim.signature.signature,
+					exponent: dkim.exponent,
+					modulus: dkim.modulus,
+					signatureData: dkim.signature
+				})
 			})
-		})
 
 		const result = Promise.all(
 			dkimsInBytes.map((dkim, i) => {
@@ -60,7 +62,7 @@ const Home = observer(() => {
 	const isSepolia = eth.network === 'sepolia' || eth.network === 'unknown network'
 	const hasEmail = email?.name
 	const isDisabled = !isInstalled || !isSepolia || !hasEmail
-	
+
 	const onDrop = useCallback((files) => {
 		setEmail(null)
 		setError(null)
@@ -95,9 +97,9 @@ const Home = observer(() => {
 		<ErrorBoundary>
 			<GlobalStyle />
 			<Container>
+				<Title>solidity-dkim demo</Title>
 				<Instructions />
 				<Body>
-					<Title>solidity-dkim demo</Title>
 					<Metamask />
 					<SideToSide>
 						<Dropzone
@@ -125,16 +127,18 @@ const Home = observer(() => {
 						</Dropzone>
 						<EmailExamples setEmail={setEmail} setError={setError} />
 					</SideToSide>
-					<VerifyButton onClick={handleVerify} disabled={isDisabled}>
+					<VerifyButton onClick={handleVerify} disabled={isDisabled} withMargin={!error && verified.length > 0}>
 						{!isDisabled ? 'Verify' : 'Please follow the instructions above'}
 					</VerifyButton>
-					{error ? (
-						<Error className="error">Error: {error}</Error>
-					) : verified.length > 0 ? (
-						verified.map((result) => <Verified key={result.name} result={result} />)
-					) : (
-						''
-					)}
+					{error ? <Error>Error: {error}</Error> : null}
+					{!error && verified.length > 0 ? (
+						<>
+							<Separator />
+							{verified.map((result) => (
+								<Verified key={result.name} result={result} />
+							))}
+						</>
+					) : null}
 				</Body>
 			</Container>
 		</ErrorBoundary>
@@ -146,36 +150,23 @@ export default dynamic(() => Promise.resolve(Home), {
 })
 
 const Container = styled.div`
-	padding: 2.5rem;
+	padding: 2rem;
 	width: 100%;
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
 	gap: 4rem;
-
-	background: linear-gradient(to bottom, #323232 0%, #3F3F3F 40%, #1C1C1C 150%), linear-gradient(to top, rgba(255,255,255,0.40) 0%, rgba(0,0,0,0.25) 200%);
- background-blend-mode: multiply;
- 	
-	/* background: hsla(10, 89%, 70%, 1);
-	background: linear-gradient(45deg, hsla(10, 89%, 70%, 1) 0%, hsla(350, 100%, 69%, 1) 100%);
-	background: -moz-linear-gradient(45deg, hsla(10, 89%, 70%, 1) 0%, hsla(350, 100%, 69%, 1) 100%);
-	background: -webkit-linear-gradient(45deg, hsla(10, 89%, 70%, 1) 0%, hsla(350, 100%, 69%, 1) 100%);
-	filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#F78770", endColorstr="#FF607B", GradientType=1 ); */
+	background: linear-gradient(#1c1e1f 0%, #1c1e1f 100%);
 `
 
 const Body = styled.div`
 	max-width: 80rem;
-	padding: 2.5rem;
+	padding: 2rem;
 	width: 100%;
 	margin: 0 auto;
-
-	// Glass effect
-	background: rgba(255, 255, 255, 0.2);
 	border-radius: 12px;
-	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-	backdrop-filter: blur(5px);
-	-webkit-backdrop-filter: blur(5px);
-	border: 1px solid rgba(255, 255, 255, 0.3);
+	background-color: #28272a;
+	border: 1px solid #343638;
 `
 
 const SideToSide = styled.div`
@@ -193,13 +184,9 @@ const DragNDrop = styled.div`
 	align-items: center;
 	cursor: pointer;
 
-	// Glass effect
-	background: rgba(255, 255, 255, 0.53);
-	border-radius: 12px;
-	box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-	backdrop-filter: blur(5px);
-	-webkit-backdrop-filter: blur(5px);
-	border: 1px solid rgba(255, 255, 255, 0.3);
+	background-color: #1c1e1f;
+	border: 1px solid #303234;
+	border-radius: 0.75rem;
 `
 
 const FileStatus = styled.div`
@@ -210,22 +197,24 @@ const FileStatus = styled.div`
 	gap: 1rem;
 
 	svg {
-		color: #0f0f0f;
 		width: 2rem;
 		height: 2rem;
 	}
 
 	p {
-		color: #0f0f0f;
-		font-size: .875rem;
+		font-size: 0.875rem;
+		max-width: 15.625rem;
+		line-height: 1.4;
+		text-align: center;
 	}
 `
 
 const Title = styled.h1`
-	text-align: center;
 	font-size: 2rem;
-	color: #fff;
-	margin-bottom: 2.2rem;
+	width: 100%;
+	max-width: 80rem;
+	margin: 0 auto;
+	margin-bottom: 3rem;
 `
 
 const VerifyButton = styled.button`
@@ -234,11 +223,13 @@ const VerifyButton = styled.button`
 	border-radius: 12px;
 	border: none;
 	background: #0f0f0f;
-	color: #fff;
 	font-size: 1rem;
 	font-weight: 600;
 	transition: all 0.2s ease-in-out;
 	
+	background: linear-gradient(#141414, #141414) padding-box, linear-gradient(to right, #a036be, #22c4ed) border-box;
+	border: 2px solid transparent;
+	margin-bottom: ${props => props.withMargin ? '2rem' : '0'};
 	&:hover:not(:disabled) {
 		cursor: pointer;
 		opacity: 0.8;
@@ -249,8 +240,12 @@ const VerifyButton = styled.button`
 	}
 `
 const Error = styled.p`
-	color: red;
-	text-align: center;
-	margin: 10px 0;
-	font-weight: bold;
+	background-color: #fdedee;
+	padding: 1rem;
+`
+
+const Separator = styled.div`
+	width: 100%;
+	height: 2px;
+	background-color: #303234;
 `
