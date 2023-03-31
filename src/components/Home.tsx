@@ -2,16 +2,19 @@ import { useState, useCallback } from 'react'
 import styled from 'styled-components'
 import { observer } from 'mobx-react'
 import Dropzone from 'react-dropzone'
-import Metamask from './MetaMask'
-import eth from '../stores/eth'
+import dynamic from 'next/dynamic'
+// Icons
 import { InsertDriveFileOutlined, AttachFile } from '@mui/icons-material'
+// Helpers
 import parseEmail from '../parse-email/browser'
 import toSolidity from '../parse-email/utils/toSolidity'
-import GlobalStyle from '../styles'
-import dynamic from 'next/dynamic'
+// State
+import eth from '../stores/eth'
+// Components
+import Metamask from './MetaMask'
 import Verified from './Verified'
 import Instructions from './Instructions'
-import Head from 'next/head'
+import GlobalStyle from '../styles'
 
 const verify = (email: string): Promise<any> => {
 	return new Promise(async (resolve, reject) => {
@@ -49,8 +52,12 @@ const Home = observer(() => {
 	const [error, setError] = useState(null)
 	const [verified, setVerified] = useState([])
 	const [dragging, setDrag] = useState(false)
-	const disabled = !eth.isInstalled || !(eth.network === 'sepolia' || eth.network === 'unknown network') && !email?.name
-
+	// Button logic
+	const isInstalled = eth.isInstalled
+	const isSepolia = eth.network === 'sepolia' || eth.network === 'unknown network'
+	const hasEmail = email?.name
+	const isDisabled = !isInstalled || !isSepolia || !hasEmail
+	
 	const onDrop = useCallback((files) => {
 		setEmail(null)
 		setError(null)
@@ -65,22 +72,26 @@ const Home = observer(() => {
 
 		reader.onabort = () => setError('file reading was aborted')
 		reader.onerror = () => setError('file reading has failed')
-		reader.onload = () => setEmail({
-			name: file.name,
-			content: reader.result
-		})
+		reader.onload = () =>
+			setEmail({
+				name: file.name,
+				content: reader.result
+			})
 		reader.readAsText(file)
 	}, [])
 
+	const handleVerify = useCallback(async () => {
+		if (email === null || !email?.content) {
+			return
+		}
+		verify(email.content).then(setVerified).catch(setError)
+	}, [email?.content])
+
 	return (
 		<>
-			<Head>
-				<link rel="preconnect" href="https://fonts.googleapis.com" />
-				<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-				<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" /> 
-			</Head>
 			<GlobalStyle />
 			<Container>
+				<Instructions />
 				<Body>
 					<Title>solidity-dkim demo</Title>
 
@@ -95,40 +106,37 @@ const Home = observer(() => {
 								<input {...getInputProps()} />
 								{email?.name ? (
 									<FileStatus>
-										<InsertDriveFileOutlined /> 
+										<InsertDriveFileOutlined />
 										<p>{email.name} loaded</p>
 									</FileStatus>
 								) : (
 									<FileStatus>
 										<AttachFile />
-										<p>Drag 'n' drop some files here, or click to select files</p>
+										<p>Drag 'n' drop .eml files here, or click to select files</p>
 									</FileStatus>
 								)}
 							</DragNDrop>
 						)}
 					</Dropzone>
 
-					<VerifyButton onClick={() => verify(email.content).then(setVerified).catch(setError)} disabled={disabled}>
-						Verify
+					<VerifyButton onClick={handleVerify} disabled={isDisabled}>
+						{!isDisabled ? 'Verify' : 'Please follow the instructions above'}
 					</VerifyButton>
 					{error ? (
 						<p className="error">error: {error}</p>
 					) : verified.length > 0 ? (
-						verified.map((result) =>
-							<Verified key={result.name} result={result} />
-						)
+						verified.map((result) => <Verified key={result.name} result={result} />)
 					) : (
 						''
 					)}
 				</Body>
-				<Instructions />
 			</Container>
 		</>
 	)
 })
 
 export default dynamic(() => Promise.resolve(Home), {
-  ssr: false
+	ssr: false
 })
 
 const Container = styled.div`
@@ -137,7 +145,6 @@ const Container = styled.div`
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
-	justify-content: space-between;
 	gap: 4rem;
 
 	background: hsla(10, 89%, 70%, 1);
@@ -167,7 +174,7 @@ const DragNDrop = styled.div`
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	margin-bottom: 2rem;
+	margin-bottom: 1.5rem;
 	min-height: 12.5rem;
 	cursor: pointer;
 
@@ -178,25 +185,6 @@ const DragNDrop = styled.div`
 	backdrop-filter: blur(5px);
 	-webkit-backdrop-filter: blur(5px);
 	border: 1px solid rgba(255, 255, 255, 0.3);
-
-	// Shake animation
-	@keyframes shake {
-  0% {
-    margin-left: 0rem;
-  }
-  25% {
-    margin-left: 0.5rem;
-  }
-  75% {
-    margin-left: -0.5rem;
-  }
-  100% {
-    margin-left: 0rem;
-  }
-}
-
-	${(props) => props.error && `animation: shake 0.2s ease-in-out 0s 2;`}
-
 `
 
 const FileStatus = styled.div`
@@ -207,13 +195,13 @@ const FileStatus = styled.div`
 	gap: 1rem;
 
 	svg {
-		color: #303030;
+		color: #0f0f0f;
 		width: 3rem;
 		height: 3rem;
 	}
 
 	p {
-		color: #303030;
+		color: #0f0f0f;
 	}
 `
 
@@ -229,8 +217,18 @@ const VerifyButton = styled.button`
 	padding: 1.25rem;
 	border-radius: 12px;
 	border: none;
-	background-color: #fff;
-	color: #303030;
+	background: #0f0f0f;
+	color: #fff;
 	font-size: 1rem;
 	font-weight: 600;
+	transition: all 0.2s ease-in-out;
+	
+	&:hover:not(:disabled) {
+		cursor: pointer;
+		opacity: 0.8;
+	}
+
+	&:disabled {
+		opacity: 0.5;
+	}
 `

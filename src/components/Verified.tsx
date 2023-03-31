@@ -46,25 +46,32 @@ export default function Verified({ result }) {
 const Wrapper = styled.div`
 	display: flex;
 	flex-direction: column;
-	gap: 1rem;
   padding-top: 2rem;
+	gap: 1.25rem;
 `
 
 const DataItem = styled.div`
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
+	gap: .75rem;
 	color: #fff;
 `
 
 const DataItemLabel = styled.span`
-	padding: 0.25rem 0.5rem;
-	font-size: 0.875rem;
-	background-color: #f5f5f5;
-	color: #303030;
+	padding: 0.4rem .75rem;
+	font-size: .75rem;
+	color: #242424;
 	width: fit-content;
 	border-radius: 0.25rem;
   pointer-events: none;
+	font-weight: 400;
+
+	// Glass effect
+	background: rgba(255, 255, 255, 0.42);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
 `
 
 const DataItemContent = styled.p`

@@ -24,34 +24,36 @@ export default function Instructions() {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
+
   max-width: 80rem;
-  padding-bottom: 2rem;
 	width: 100%;
+  /* padding-top: 2rem; */
+  
   text-align: center;
 	margin: 0 auto;
   color: #fff;
 `
 
 const Title = styled.h2`
-  font-size: 2rem;
+  margin-bottom: 1rem;
+  
+  font-size: 1.5rem;
   font-weight: 500;
   text-align: center;
-  margin-bottom: 2rem;
 `
 
 const Step = styled.div`
   display: flex;
   flex-direction: column;
-  /* align-items: flex-end; */
   gap: .75rem;
 `
 
 const StepNumber = styled.span`
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 800;
 `
 
 const StepText = styled.p`
-  font-size: 1.2rem;
+  font-size: 1rem;
 `

@@ -45,7 +45,7 @@ const Wrapper = styled.div`
 	height: 3.75rem;
 	margin-bottom: 1rem;
   border-radius: 12px;
-  color: #303030;
+  color: #0f0f0f;
 
   // Glass effect
   background: rgba(255, 255, 255, 0.42);
