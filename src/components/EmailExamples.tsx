@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import styled from 'styled-components'
 
-import { Gmail, ICloud, Ambire, ProtonMail, Yahoo } from './emailExamplesList.js'
+import { Gmail, ICloud, Ambire, Yahoo } from './emailExamplesList.js'
 
 const files = [
   {
@@ -15,10 +15,6 @@ const files = [
   {
     name: 'ambire.eml',
     content: Ambire
-  },
-  {
-    name: 'protonmail.eml',
-    content: ProtonMail
   },
   {
     name: 'yahoo.eml',
@@ -76,7 +72,7 @@ const Title = styled.h3`
 const Buttons = styled.div`
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(100px ,130px));
   gap: .5rem;
   grid-area: buttons;
 `
@@ -86,6 +82,7 @@ const EmailButton = styled.button`
   border-radius: .75rem;
   border: none;
   cursor: pointer;
+  max-height: 60px;
 
   // Glass effect
   background: rgba(255, 255, 255, 0.42);
