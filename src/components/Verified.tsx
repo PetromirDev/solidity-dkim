@@ -24,7 +24,7 @@ export default function Verified({ result }) {
 						<DataItemLabel>Expires</DataItemLabel>
 						<DataItemContent>
 							{signatureData &&
-								new Date(Number(signatureData.expires + 1000)).toLocaleString('en-US', {
+								new Date(Number(signatureData.expires * 1000)).toLocaleString('en-US', {
 									weekday: 'long',
 									day: 'numeric',
 									month: '2-digit',

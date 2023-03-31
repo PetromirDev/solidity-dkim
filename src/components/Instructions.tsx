@@ -6,13 +6,15 @@ export default function Instructions() {
     <Wrapper>
       <Title>How to use this tool</Title>
       <Step>
-        <StepNumber>1</StepNumber>
+        <StepNumber>1.</StepNumber>
+        {" "}
         <StepText>
           Connect your Browser wallet to the Sepolia network.
         </StepText>
       </Step>
       <Step>
-        <StepNumber>2</StepNumber>
+        <StepNumber>2.</StepNumber>
+        {" "}
         <StepText>
           Drag and drop an email file to the dropzone or select one from the buttons below the dropzone.
         </StepText>
@@ -28,8 +30,7 @@ const Wrapper = styled.div`
 
   max-width: 80rem;
 	width: 100%;
-  /* padding-top: 2rem; */
-  
+    
   text-align: center;
 	margin: 0 auto;
   color: #fff;
@@ -43,17 +44,17 @@ const Title = styled.h2`
   text-align: center;
 `
 
-const Step = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: .75rem;
+const Step = styled.p`
+  font-size: 1rem;
+  line-height: 1.625rem;
 `
 
 const StepNumber = styled.span`
   font-size: 1.5rem;
   font-weight: 800;
+  line-height: 1.625rem;
 `
 
-const StepText = styled.p`
-  font-size: 1rem;
+const StepText = styled.span`
+  line-height: 1.625rem;
 `

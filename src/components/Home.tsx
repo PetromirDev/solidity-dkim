@@ -15,6 +15,7 @@ import Metamask from './MetaMask'
 import Verified from './Verified'
 import Instructions from './Instructions'
 import GlobalStyle from '../styles'
+import EmailExamples from './EmailExamples'
 
 const verify = (email: string): Promise<any> => {
 	return new Promise(async (resolve, reject) => {
@@ -84,6 +85,7 @@ const Home = observer(() => {
 		if (email === null || !email?.content) {
 			return
 		}
+
 		verify(email.content).then(setVerified).catch(setError)
 	}, [email?.content])
 
@@ -94,31 +96,32 @@ const Home = observer(() => {
 				<Instructions />
 				<Body>
 					<Title>solidity-dkim demo</Title>
-
 					<Metamask />
-					<Dropzone
-						onDrop={onDrop}
-						multiple={false}
-						onDragEnter={() => setDrag(true)}
-						onDragLeave={() => setDrag(false)}>
-						{({ getRootProps, getInputProps }) => (
-							<DragNDrop {...getRootProps()}>
-								<input {...getInputProps()} />
-								{email?.name ? (
-									<FileStatus>
-										<InsertDriveFileOutlined />
-										<p>{email.name} loaded</p>
-									</FileStatus>
-								) : (
-									<FileStatus>
-										<AttachFile />
-										<p>Drag 'n' drop .eml files here, or click to select files</p>
-									</FileStatus>
-								)}
-							</DragNDrop>
-						)}
-					</Dropzone>
-
+					<SideToSide>
+						<Dropzone
+							onDrop={onDrop}
+							multiple={false}
+							onDragEnter={() => setDrag(true)}
+							onDragLeave={() => setDrag(false)}>
+							{({ getRootProps, getInputProps }) => (
+								<DragNDrop {...getRootProps()}>
+									<input {...getInputProps()} />
+									{email?.name ? (
+										<FileStatus>
+											<InsertDriveFileOutlined />
+											<p>{email.name} loaded</p>
+										</FileStatus>
+									) : (
+										<FileStatus>
+											<AttachFile />
+											<p>Drag 'n' drop .eml files here, or click to select files</p>
+										</FileStatus>
+									)}
+								</DragNDrop>
+							)}
+						</Dropzone>
+						<EmailExamples setEmail={setEmail} setError={setError} />
+					</SideToSide>
 					<VerifyButton onClick={handleVerify} disabled={isDisabled}>
 						{!isDisabled ? 'Verify' : 'Please follow the instructions above'}
 					</VerifyButton>
@@ -147,11 +150,14 @@ const Container = styled.div`
 	flex-direction: column;
 	gap: 4rem;
 
-	background: hsla(10, 89%, 70%, 1);
+	background: linear-gradient(to bottom, #323232 0%, #3F3F3F 40%, #1C1C1C 150%), linear-gradient(to top, rgba(255,255,255,0.40) 0%, rgba(0,0,0,0.25) 200%);
+ background-blend-mode: multiply;
+ 	
+	/* background: hsla(10, 89%, 70%, 1);
 	background: linear-gradient(45deg, hsla(10, 89%, 70%, 1) 0%, hsla(350, 100%, 69%, 1) 100%);
 	background: -moz-linear-gradient(45deg, hsla(10, 89%, 70%, 1) 0%, hsla(350, 100%, 69%, 1) 100%);
 	background: -webkit-linear-gradient(45deg, hsla(10, 89%, 70%, 1) 0%, hsla(350, 100%, 69%, 1) 100%);
-	filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#F78770", endColorstr="#FF607B", GradientType=1 );
+	filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#F78770", endColorstr="#FF607B", GradientType=1 ); */
 `
 
 const Body = styled.div`
@@ -169,13 +175,19 @@ const Body = styled.div`
 	border: 1px solid rgba(255, 255, 255, 0.3);
 `
 
+const SideToSide = styled.div`
+	display: flex;
+	gap: 1rem;
+	margin-bottom: 1rem;
+	min-height: 15.625rem;
+`
+
 const DragNDrop = styled.div`
 	display: flex;
+	flex: 2;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	margin-bottom: 1.5rem;
-	min-height: 12.5rem;
 	cursor: pointer;
 
 	// Glass effect
@@ -196,12 +208,13 @@ const FileStatus = styled.div`
 
 	svg {
 		color: #0f0f0f;
-		width: 3rem;
-		height: 3rem;
+		width: 2rem;
+		height: 2rem;
 	}
 
 	p {
 		color: #0f0f0f;
+		font-size: .875rem;
 	}
 `
 
